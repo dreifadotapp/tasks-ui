@@ -1,0 +1,44 @@
+/**
+*    Note, these styles are specific to the dashboard
+**/
+
+
+
+span.note {
+    font-size: 13px;
+    margin-left: 5px;
+    xtext-align: center;
+    xline-height: 22px;
+}
+
+span.password {
+    font-size: 13px;
+    margin-left: 5px;
+}
+
+ span.password:before {
+           display: inline-block;
+           _width: 20px;
+           _height: 13px;
+           content: "[password is ";
+           margin-right:3px;
+        }
+
+        span.password:after {
+           content: "]";
+           margin-left:3px;
+        }
+
+ span.heading {
+    font-weight: 700;
+ }
+
+ span.heading:after {
+    content: ": ";
+ }
+
+ span.command {
+    font-family: monospace;
+    background-color: #555;
+    color: LawnGreen;
+ }

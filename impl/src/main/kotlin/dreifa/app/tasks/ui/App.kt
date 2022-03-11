@@ -9,9 +9,6 @@ import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
 
-import org.http4k.core.*
-import org.http4k.routing.*
-import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 import java.io.File

@@ -4,6 +4,7 @@ import dreifa.app.registry.Registry
 import dreifa.app.tasks.AsyncTask
 import dreifa.app.tasks.BlockingTask
 import dreifa.app.tasks.TaskFactory
+import dreifa.app.tasks.TaskReflections
 import dreifa.app.tasks.ui.TemplateProcessor
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -27,6 +28,11 @@ class ViewTaskController(registry: Registry) {
 
                 }
             }
+
+            val reflections = TaskReflections(task::class)
+            model["inputClazz"] = reflections.paramClass()
+            model["outputClazz"] = reflections.resultClass()
+
 
             val html = TemplateProcessor().renderMustache("tasks/view.html", mapOf("task" to model))
             return Response(Status.OK).body(html)

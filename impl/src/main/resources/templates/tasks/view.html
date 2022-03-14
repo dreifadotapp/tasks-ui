@@ -1,8 +1,24 @@
-View task
+<h2>View task </h2>
 
 {{#task}}
 Task is : {{name}} </br>
 Input is: {{inputClazz}} </br>
 Output is: {{outputClazz}} </br>
+Type is: {{type}} </br>
+
+{{#hasTaskDoc}}
+<h3>Task Docs</h3>
+Description: {{description}} </br>
+
+{{#examples}}
+<h4>{{description}}</h4>
+    {{#input}}Input: {{example}}{{#description}} - {{.}} {{/description}} </br> {{/input}}
+    {{^input}}Input: not provided </br> {{/input}}
+
+    {{#output}}Output: {{.}} </br> {{/output}}
+    {{^output}}Output: not provided </br> {{/output}}
+{{/examples}}
+{{/hasTaskDoc}}
+
 {{/task}}
 

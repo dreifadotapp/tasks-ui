@@ -3,9 +3,13 @@ package dreifa.app.tasks.ui
 import dreifa.app.registry.Registry
 import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
+import dreifa.app.tasks.AsyncResultChannelSinkFactory
+import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
 import dreifa.app.tasks.TaskFactory
+import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.demo.DemoTasks
 import dreifa.app.tasks.logging.CapturedOutputStream
+import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
 
@@ -24,17 +28,27 @@ fun main(args: Array<String>) {
 //
 //    val config: DashboardConfig = mapper.readValue(configYaml)
 
+    // base services
     val registry = Registry()
     val es = InMemoryEventStore()
     val sks = SimpleKVStore()
     val logConsumerContext = InMemoryLogging()
     val captured = CapturedOutputStream(logConsumerContext)
-
     registry.store(es).store(sks).store(logConsumerContext).store(captured)
 
+    // wirein logging channel
+    val logChannelFactory = DefaultLoggingChannelFactory(registry)
+    registry.store(logChannelFactory)
+
+    registry.store(DefaultAsyncResultChannelSinkFactory())
+
+    // wire in TaskFactory
     val taskFactory = TaskFactory(registry)
     taskFactory.register(DemoTasks())
     registry.store(taskFactory)
+
+    // wire in TaskClient
+    registry.store(SimpleTaskClient(registry))
 
     val app = RoutingController(registry, vhost)
     val server = app.asServer(SunHttp(port.toInt()))

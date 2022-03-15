@@ -1,4 +1,4 @@
-package dreifa.app.tasks.ui.controllers
+package dreifa.app.tasks.ui.controllers.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.TaskFactory

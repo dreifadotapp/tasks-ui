@@ -2,6 +2,12 @@ package dreifa.app.tasks.ui.controllers
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
+import dreifa.app.tasks.ui.controllers.providers.DoRegisterProviderController
+import dreifa.app.tasks.ui.controllers.providers.RegisterProviderController
+import dreifa.app.tasks.ui.controllers.tasks.DoExecuteTaskController
+import dreifa.app.tasks.ui.controllers.tasks.ExecuteTaskController
+import dreifa.app.tasks.ui.controllers.tasks.ListTasksController
+import dreifa.app.tasks.ui.controllers.tasks.ViewTaskController
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -14,10 +20,17 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         },
         "/static" bind static(ResourceLoader.Classpath("www")),
 
-
         "/home" bind Method.GET to {
             val html = TemplateProcessor().renderMustache("home.html", mapOf("message" to "foobar"))
             Response(Status.OK).body(html)
+        },
+
+        "/providers/register" bind Method.GET to {
+            RegisterProviderController(registry).handle(it)
+        },
+
+        "/providers/doRegister" bind Method.POST to {
+            DoRegisterProviderController(registry).handle(it)
         },
 
         "/tasks" bind Method.GET to {

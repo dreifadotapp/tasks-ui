@@ -1,47 +1,65 @@
-package dreifa.app.tasks.ui.controllers
+package dreifa.app.tasks.ui.controllers.tasks
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import dreifa.app.registry.Registry
 import dreifa.app.sis.JsonSerialiser
 import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
-import dreifa.app.tasks.ui.TemplateProcessor
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.body.form
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ExecuteTaskController(registry: Registry) {
+class DoExecuteTaskController(registry: Registry) {
     private val taskFactory = registry.get(TaskFactory::class.java)
     private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
     fun handle(request: Request): Response {
         try {
             val taskName = request.path("task")!!
-            val exampleNumber = request.query("example")!!.toInt()
 
-            val model = HashMap<String, Any>()
-            model["name"] = taskName
+            val inputClazz = request.form("inputClazz")!!
+            val outputClazz = request.form("outputClazz")!!
+            val inputJson = request.form("inputJson")!!
+            val kClass = Class.forName(outputClazz).kotlin
 
-            val task = taskFactory.createInstance(taskName)
-            when (task) {
-                is BlockingTask<*, *> -> {
-                    model["type"] = "Blocking"
-                }
-                is AsyncTask<*, *> -> {
-                    model["type"] = "Async"
-                }
-            }
 
-            checkForTaskDocs(taskName, exampleNumber, model)
+            val input = serialiser.fromPacketPayload(inputJson, inputClazz)
 
-            val reflections = TaskReflections(task::class)
-            model["inputClazz"] = reflections.paramClass().qualifiedName!!
-            model["outputClazz"] = reflections.resultClass().qualifiedName!!
+            val ctx = SimpleClientContext()
+            val result = taskClient.execBlocking(ctx, taskName, input, kClass)
 
-            val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
-            return Response(Status.OK).body(html)
+            val mapper: ObjectMapper = ObjectMapper()
+            val module = KotlinModule()
+            //module.addSerializer(SerialisationPacketWireFormat::class.java, XX())
+            mapper.registerModule(module)
+
+
+//            val model = HashMap<String, Any>()
+//            model["name"] = taskName
+//
+//            val task = taskFactory.createInstance(taskName)
+//            when (task) {
+//                is BlockingTask<*, *> -> {
+//                    model["type"] = "Blocking"
+//                }
+//                is AsyncTask<*, *> -> {
+//                    model["type"] = "Async"
+//                }
+//            }
+//
+//            checkForTaskDocs(taskName, exampleNumber, model)
+//
+//            val reflections = TaskReflections(task::class)
+//            model["inputClazz"] = reflections.paramClass()
+//            model["outputClazz"] = reflections.resultClass()
+
+            //val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
+            return Response(Status.OK).body(result!!.toString())
         } catch (ex: Exception) {
             return Response(Status.INTERNAL_SERVER_ERROR).body(ex.message!!)
         }

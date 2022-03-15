@@ -8,15 +8,24 @@ Type is: {{type}} </br>
 
 {{#hasTaskDoc}}
 <h3>Task Docs</h3>
-Description: {{description}} </br>
+<p><b>Description:</b>&nbsp;{{description}}</p>
 
 {{#examples}}
-<h4>{{description}}</h4>
-    {{#input}}Input: {{example}}{{#description}} - {{.}} {{/description}} </br> {{/input}}
-    {{^input}}Input: not provided </br> {{/input}}
+<h5>Example #{{exampleNumber}}</h5>
+<p>{{description}}</p>
+{{#hasInput}}
+{{#input}}Input: {{example}}{{#description}}- {{.}} {{/description}}  </br>
+JSON: {{{inputAsJson}}}</br>
+{{/input}}
+{{/hasInput}}
+{{^hasInput}}Input: not provided </br> {{/hasInput}}
 
-    {{#output}}Output: {{.}} </br> {{/output}}
-    {{^output}}Output: not provided </br> {{/output}}
+{{#hasOutput}}
+Output: {{output}} </br>
+JSON: {{{outputAsJson}}}</br>
+{{/hasOutput}}
+{{^hasOutput}}Output: not provided </br> {{/hasOutput}}
+
 {{/examples}}
 {{/hasTaskDoc}}
 

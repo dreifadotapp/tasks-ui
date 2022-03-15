@@ -3,11 +3,11 @@ package dreifa.app.tasks.ui
 import dreifa.app.registry.Registry
 import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
-import dreifa.app.tasks.AsyncResultChannelSinkFactory
 import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
 import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.demo.DemoTasks
+import dreifa.app.tasks.demo.echo.EchoTasks
 import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
@@ -45,6 +45,7 @@ fun main(args: Array<String>) {
     // wire in TaskFactory
     val taskFactory = TaskFactory(registry)
     taskFactory.register(DemoTasks())
+    taskFactory.register(EchoTasks())
     registry.store(taskFactory)
 
     // wire in TaskClient

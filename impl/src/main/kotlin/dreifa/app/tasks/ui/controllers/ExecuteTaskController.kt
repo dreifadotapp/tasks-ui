@@ -12,14 +12,16 @@ import org.http4k.core.Status
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ViewTaskController(registry: Registry) {
+class ExecuteTaskController(registry: Registry) {
     private val taskFactory = registry.get(TaskFactory::class.java)
     private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
     fun handle(request: Request): Response {
         try {
-            val model = HashMap<String, Any>()
             val taskName = request.path("task")!!
+            val exampleNumber = request.query("example")!!.toInt()
+
+            val model = HashMap<String, Any>()
             model["name"] = taskName
 
             val task = taskFactory.createInstance(taskName)
@@ -32,20 +34,20 @@ class ViewTaskController(registry: Registry) {
                 }
             }
 
-            checkForTaskDocs(taskName, model)
+            checkForTaskDocs(taskName, exampleNumber, model)
 
             val reflections = TaskReflections(task::class)
             model["inputClazz"] = reflections.paramClass().qualifiedName!!
             model["outputClazz"] = reflections.resultClass().qualifiedName!!
 
-            val html = TemplateProcessor().renderMustache("tasks/view.html", mapOf("task" to model))
+            val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
             return Response(Status.OK).body(html)
         } catch (ex: Exception) {
             return Response(Status.INTERNAL_SERVER_ERROR).body(ex.message!!)
         }
     }
 
-    private fun checkForTaskDocs(task: String, model: HashMap<String, Any>) {
+    private fun checkForTaskDocs(task: String, example: Int, model: HashMap<String, Any>) {
         try {
             val docs = taskClient.taskDocs<Any, Any>(
                 SimpleClientContext(),
@@ -53,13 +55,12 @@ class ViewTaskController(registry: Registry) {
             )
             model["hasTaskDoc"] = true
             model["description"] = docs.description()
-            model["examples"] = docs.examples().mapIndexed { index, example -> examplesPresenter(index, example) }
-
+            model["example"] = examplesPresenter(docs.examples()[example - 1])
         } catch (ignoreMe: RuntimeException) {
         }
     }
 
-    private fun examplesPresenter(index: Int, example: TaskExample<Any, Any>): Map<String, Any> {
+    private fun examplesPresenter(example: TaskExample<Any, Any>): Map<String, Any> {
         val model = HashMap<String, Any>()
         if (example.input() != null) {
             model["hasInput"] = true
@@ -68,14 +69,14 @@ class ViewTaskController(registry: Registry) {
         } else {
             model["hasInput"] = false
         }
-        if (example.output() != null) {
-            model["hasOutput"] = true
-            model["output"] = example.output()!!
-            model["outputAsJson"] = serialiser.toPacketData(example.output()!!)
-        } else {
-            model["hasOutput"] = false
-        }
-        model["exampleNumber"] = index + 1
+//        if (example.output() != null) {
+//            model["hasOutput"] = true
+//            model["output"] = example.output()!!
+//            model["outputAsJson"] = serialiser.toPacketData(example.output()!!)
+//        } else {
+//            model["hasOutput"] = false
+//        }
+//        model["exampleNumber"] = index + 1
         model["description"] = example.description()
         return model
     }

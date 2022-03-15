@@ -1,0 +1,25 @@
+<h2>Execute Task</h2>
+
+{{#task}}
+Task is : {{name}} </br>
+Input is: {{inputClazz}} </br>
+Output is: {{outputClazz}} </br>
+Type is: {{type}} </br>
+
+<p><b>Description:</b>&nbsp;{{description}}</p>
+
+{{#example}}
+<p>{{description}}</p>
+
+
+<form action="doExecute" method="POST">
+    Params: <textarea name="inputJson">{{{inputAsJson}}}</textarea>
+    <input type="hidden" name="inputClazz" value="{{inputClazz}}">
+    <input type="hidden" name="outputClazz" value="{{outputClazz}}">
+
+    <button type="submit">DoIT</button>
+</form>
+{{/example}}
+
+{{/task}}
+

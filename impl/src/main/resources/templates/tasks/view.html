@@ -13,6 +13,8 @@ Type is: {{type}} </br>
 {{#examples}}
 <h5>Example #{{exampleNumber}}</h5>
 <p>{{description}}</p>
+<a class="btn btn-primary" href="/tasks/{{name}}/execute?example={{exampleNumber}}">Try example</a>
+</br>
 {{#hasInput}}
 {{#input}}Input: {{example}}{{#description}}- {{.}} {{/description}}  </br>
 JSON: {{{inputAsJson}}}</br>
@@ -20,13 +22,16 @@ JSON: {{{inputAsJson}}}</br>
 {{/hasInput}}
 {{^hasInput}}Input: not provided </br> {{/hasInput}}
 
+
 {{#hasOutput}}
 Output: {{output}} </br>
 JSON: {{{outputAsJson}}}</br>
 {{/hasOutput}}
 {{^hasOutput}}Output: not provided </br> {{/hasOutput}}
 
+</br>
 {{/examples}}
+
 {{/hasTaskDoc}}
 
 {{/task}}

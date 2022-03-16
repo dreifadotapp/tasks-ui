@@ -8,6 +8,7 @@ import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.demo.DemoTasks
 import dreifa.app.tasks.demo.echo.EchoTasks
+import dreifa.app.tasks.inbuilt.InBuiltTasks
 import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
@@ -46,6 +47,7 @@ fun main(args: Array<String>) {
     val taskFactory = TaskFactory(registry)
     taskFactory.register(DemoTasks())
     taskFactory.register(EchoTasks())
+    taskFactory.register(InBuiltTasks())
     registry.store(taskFactory)
 
     // wire in TaskClient

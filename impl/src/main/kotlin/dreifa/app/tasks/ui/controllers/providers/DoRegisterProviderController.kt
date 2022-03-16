@@ -1,8 +1,11 @@
 package dreifa.app.tasks.ui.controllers.providers
 
+import dreifa.app.fileBundle.BinaryBundleItem
+import dreifa.app.fileBundle.builders.FileBundleBuilder
 import dreifa.app.registry.Registry
 import dreifa.app.sis.JsonSerialiser
 import dreifa.app.tasks.*
+import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
 import io.github.classgraph.ClassGraph
@@ -21,11 +24,25 @@ class DoRegisterProviderController(registry: Registry) {
         try {
             val model = HashMap<String, Any>()
 
-
             val receivedForm = MultipartFormBody.from(request)
             val multipart = receivedForm.files("file1")[0]
             val f = File(multipart.filename)
             f.writeBytes(multipart.content.readAllBytes())
+
+            val item = BinaryBundleItem.fromFile(f, multipart.filename)
+
+            val bundle = FileBundleBuilder()
+                .withName("${multipart.filename} Bundle")
+                .addItem(BinaryBundleItem.fromFile(f, multipart.filename))
+                .build()
+
+            val ctx = SimpleClientContext()
+            taskClient.execBlocking(
+                ctx,
+                "dreifa.app.tasks.inbuilt.fileBundle.FBStoreTaskImpl",
+                bundle, Unit::class
+            )
+
 
             val url = URL("file:${f.absolutePath}")
 
@@ -37,7 +54,7 @@ class DoRegisterProviderController(registry: Registry) {
             val graph = ClassGraph()
                 .enableAllInfo()
                 .enableRemoteJarScanning()
-                .acceptPackages("dreifa.app")
+                //.acceptPackages("dreifa.app")
                 .addClassLoader(loader)
                 .scan()
 
@@ -45,7 +62,6 @@ class DoRegisterProviderController(registry: Registry) {
             model["registration"] = registrations
                 .filter { it.classpathElementURL == url }
                 .single().name
-
 
             val html = TemplateProcessor().renderMustache("providers/registerResult.html", model)
             return Response(Status.OK).body(html)

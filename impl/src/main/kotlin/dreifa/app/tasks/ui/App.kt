@@ -5,6 +5,7 @@ import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
 import dreifa.app.tasks.TaskFactory
+import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.demo.DemoTasks
 import dreifa.app.tasks.demo.echo.EchoTasks
@@ -35,7 +36,8 @@ fun main(args: Array<String>) {
     val sks = SimpleKVStore()
     val logConsumerContext = InMemoryLogging()
     val captured = CapturedOutputStream(logConsumerContext)
-    registry.store(es).store(sks).store(logConsumerContext).store(captured)
+    val locations = TestLocations()
+    registry.store(es).store(sks).store(logConsumerContext).store(captured).store(locations)
 
     // wirein logging channel
     val logChannelFactory = DefaultLoggingChannelFactory(registry)

@@ -2,7 +2,11 @@
 
 Name : {{name}} </br>
 Size : {{size}} </br>
-Registrations : {{registration}} </br>
+Registrations :
+<ul>
+    {{#registrations}}<li>{{.}}</li>{{/registrations}}
+</ul>
+
 
 
 

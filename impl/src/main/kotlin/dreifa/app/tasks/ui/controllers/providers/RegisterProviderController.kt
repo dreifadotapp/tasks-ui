@@ -15,9 +15,9 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class RegisterProviderController(registry: Registry) {
-    private val taskFactory = registry.get(TaskFactory::class.java)
-    private val taskClient = registry.get(TaskClient::class.java)
-    private val serialiser = JsonSerialiser()
+//    private val taskFactory = registry.get(TaskFactory::class.java)
+//    private val taskClient = registry.get(TaskClient::class.java)
+//    private val serialiser = JsonSerialiser()
     fun handle(request: Request): Response {
         try {
             val model = HashMap<String, Any>()

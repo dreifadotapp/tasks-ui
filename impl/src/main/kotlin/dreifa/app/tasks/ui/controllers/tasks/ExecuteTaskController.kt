@@ -17,34 +17,31 @@ class ExecuteTaskController(registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
     fun handle(request: Request): Response {
-        try {
-            val taskName = request.path("task")!!
-            val exampleNumber = request.query("example")!!.toInt()
+        val taskName = request.path("task")!!
+        val exampleNumber = request.query("example")!!.toInt()
 
-            val model = HashMap<String, Any>()
-            model["name"] = taskName
+        val model = HashMap<String, Any>()
+        model["name"] = taskName
 
-            val task = taskFactory.createInstance(taskName)
-            when (task) {
-                is BlockingTask<*, *> -> {
-                    model["type"] = "Blocking"
-                }
-                is AsyncTask<*, *> -> {
-                    model["type"] = "Async"
-                }
+        val task = taskFactory.createInstance(taskName)
+        when (task) {
+            is BlockingTask<*, *> -> {
+                model["type"] = "Blocking"
             }
-
-            checkForTaskDocs(taskName, exampleNumber, model)
-
-            val reflections = TaskReflections(task::class)
-            model["inputClazz"] = reflections.paramClass().qualifiedName!!
-            model["outputClazz"] = reflections.resultClass().qualifiedName!!
-
-            val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
-            return Response(Status.OK).body(html)
-        } catch (ex: Exception) {
-            return Response(Status.INTERNAL_SERVER_ERROR).body(ex.message!!)
+            is AsyncTask<*, *> -> {
+                model["type"] = "Async"
+            }
         }
+
+        checkForTaskDocs(taskName, exampleNumber, model)
+
+        val reflections = TaskReflections(task::class)
+        model["inputClazz"] = reflections.paramClass().qualifiedName!!
+        model["outputClazz"] = reflections.resultClass().qualifiedName!!
+
+        val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
+        return Response(Status.OK).body(html)
+
     }
 
     private fun checkForTaskDocs(task: String, example: Int, model: HashMap<String, Any>) {

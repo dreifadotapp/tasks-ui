@@ -1,7 +1,5 @@
 package dreifa.app.tasks.ui.controllers.tasks
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import dreifa.app.registry.Registry
 import dreifa.app.sis.JsonSerialiser
 import dreifa.app.tasks.*
@@ -19,7 +17,6 @@ class DoExecuteTaskController(registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
     fun handle(request: Request): Response {
-        try {
             val taskName = request.path("task")!!
 
             val inputClazz = request.form("inputClazz")!!
@@ -27,42 +24,18 @@ class DoExecuteTaskController(registry: Registry) {
             val inputJson = request.form("inputJson")!!
             val kClass = Class.forName(outputClazz).kotlin
 
-
             val input = serialiser.fromPacketPayload(inputJson, inputClazz)
 
             val ctx = SimpleClientContext()
             val result = taskClient.execBlocking(ctx, taskName, input, kClass)
 
-            val mapper: ObjectMapper = ObjectMapper()
-            val module = KotlinModule()
-            //module.addSerializer(SerialisationPacketWireFormat::class.java, XX())
-            mapper.registerModule(module)
+//            val mapper: ObjectMapper = ObjectMapper()
+//            val module = KotlinModule()
+//            //module.addSerializer(SerialisationPacketWireFormat::class.java, XX())
+//            mapper.registerModule(module)
 
-
-//            val model = HashMap<String, Any>()
-//            model["name"] = taskName
-//
-//            val task = taskFactory.createInstance(taskName)
-//            when (task) {
-//                is BlockingTask<*, *> -> {
-//                    model["type"] = "Blocking"
-//                }
-//                is AsyncTask<*, *> -> {
-//                    model["type"] = "Async"
-//                }
-//            }
-//
-//            checkForTaskDocs(taskName, exampleNumber, model)
-//
-//            val reflections = TaskReflections(task::class)
-//            model["inputClazz"] = reflections.paramClass()
-//            model["outputClazz"] = reflections.resultClass()
-
-            //val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
             return Response(Status.OK).body(result!!.toString())
-        } catch (ex: Exception) {
-            return Response(Status.INTERNAL_SERVER_ERROR).body(ex.message!!)
-        }
+
     }
 
     private fun checkForTaskDocs(task: String, example: Int, model: HashMap<String, Any>) {

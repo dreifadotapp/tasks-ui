@@ -14,6 +14,8 @@ import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
+import org.http4k.core.then
+import org.http4k.filter.ServerFilters
 
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
@@ -55,7 +57,11 @@ fun main(args: Array<String>) {
     // wire in TaskClient
     registry.store(SimpleTaskClient(registry))
 
-    val app = RoutingController(registry, vhost)
+    val app =
+        ServerFilters.CatchAll().then(
+            RoutingController(registry, vhost)
+        )
+
     val server = app.asServer(SunHttp(port.toInt()))
     println("Starting server on port $port")
     server.start()

@@ -3,6 +3,7 @@ package dreifa.app.tasks.ui.controllers
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.providers.DoRegisterProviderController
+import dreifa.app.tasks.ui.controllers.providers.ListProvidersController
 import dreifa.app.tasks.ui.controllers.providers.RegisterProviderController
 import dreifa.app.tasks.ui.controllers.tasks.DoExecuteTaskController
 import dreifa.app.tasks.ui.controllers.tasks.ExecuteTaskController
@@ -23,6 +24,10 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         "/home" bind Method.GET to {
             val html = TemplateProcessor().renderMustache("home.html", mapOf("message" to "foobar"))
             Response(Status.OK).body(html)
+        },
+
+        "/providers" bind Method.GET to {
+            ListProvidersController(registry).handle(it)
         },
 
         "/providers/register" bind Method.GET to {

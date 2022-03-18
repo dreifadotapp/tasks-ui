@@ -5,7 +5,7 @@ import dreifa.app.registry.Registry
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.inbuilt.providers.TPScanJarRequest
-import dreifa.app.tasks.ui.TemplateProcessor
+import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.adapters.MulitPartRequestToFileBundleAdapter
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.types.StringList
@@ -14,7 +14,7 @@ import org.http4k.core.*
 class DoRegisterProviderController(registry: Registry) : BaseController() {
     private val taskClient = registry.get(TaskClient::class.java)
 
-    fun handle(request: Request): Response {
+    override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
 
         // build a FileBundle
@@ -26,7 +26,7 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
         val ctx = SimpleClientContext()
         taskClient.execBlocking(
             ctx,
-            "dreifa.app.tasks.inbuilt.fileBundle.FBStoreTaskImpl",
+            TaskNames.FBStoreTask,
             bundleAdapter.fromBundle(bundle),
             Unit::class
         )
@@ -35,7 +35,7 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
         val scanRequest = TPScanJarRequest(bundle.id)
         val registrations = taskClient.execBlocking(
             ctx,
-            "dreifa.app.tasks.inbuilt.providers.TPScanJarTaskImpl",
+            TaskNames.TPScanJarTask,
             scanRequest,
             StringList::class
         )
@@ -43,7 +43,7 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
         // build the view
         model["name"] = bundle.items[0].path
         model["registrations"] = registrations
-        val html = TemplateProcessor().renderMustache("providers/registerResult.html", model)
+        val html = templateEngine().renderMustache("providers/registerResult.html", model)
         return Response(Status.OK).body(html)
 
     }

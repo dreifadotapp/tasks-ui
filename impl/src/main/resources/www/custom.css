@@ -1,0 +1,55 @@
+
+
+.colour-primary {
+    background-color: #A350AF;
+    color: #020202;
+}
+    .colour-primary a.btn{
+        color: #EEE;
+    }
+    .colour-primary a.btn:hover{
+        color: #BBB;
+    }
+     .colour-primary a{
+        color: #EEE;
+    }
+     .colour-primary a:hover{
+        color: #BBB;
+    }
+
+    /* colours using the colour wheel - https://www.canva.com/colors/color-wheel/ */
+    .primary_background {
+        background-color: #A350AF;
+    }
+
+    .primary{
+        color: #A350AF;
+    }
+
+    .monochrome_background {
+        background-color: #B673BF;
+    }
+
+    .monochrome{
+        color: #B673BF;
+    }
+
+    .complementary_background {
+        background-color: #65E11E;
+    }
+
+    .complementary_background {
+        color: #65E11E;
+    }
+
+
+
+.step .step-item.active a::before {
+    border-color: #5CAF50;
+ }
+
+.btn.btn-primary {
+    background: #A350AF;
+    border-color: #B673BF;
+    color: #eee;
+}

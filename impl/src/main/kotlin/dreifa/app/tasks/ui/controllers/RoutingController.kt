@@ -20,7 +20,9 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         "/static" bind static(ResourceLoader.Classpath("www")),
 
         "/home" bind Method.GET to {
-            val html = TemplateProcessor().renderMustache("home.html", mapOf("message" to "foobar"))
+            val html = TemplateProcessor().renderMustache("home.html",
+                mapOf("message" to "foobar"),
+            "home.html")
             Response(Status.OK).body(html)
         },
 

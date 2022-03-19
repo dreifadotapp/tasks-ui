@@ -7,7 +7,7 @@ import org.http4k.core.MultipartFormBody
 import org.http4k.core.Request
 import java.io.File
 
-class MulitPartRequestToFileBundleAdapter {
+class MultiPartRequestToFileBundleAdapter {
     fun toFileBundle(request: Request): FileBundle {
         val receivedForm = MultipartFormBody.from(request)
         val multipart = receivedForm.files("payload")[0]

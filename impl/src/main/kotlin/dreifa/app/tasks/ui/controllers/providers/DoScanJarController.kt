@@ -6,7 +6,7 @@ import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.inbuilt.providers.TPScanJarRequest
 import dreifa.app.tasks.ui.TaskNames
-import dreifa.app.tasks.ui.adapters.MulitPartRequestToFileBundleAdapter
+import dreifa.app.tasks.ui.adapters.MultiPartRequestToFileBundleAdapter
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.types.StringList
 import org.http4k.core.*
@@ -18,7 +18,7 @@ class DoScanJarController(registry: Registry) : BaseController() {
         val model = buildBaseModel(request)
 
         // build a FileBundle
-        val requestAdapter = MulitPartRequestToFileBundleAdapter()
+        val requestAdapter = MultiPartRequestToFileBundleAdapter()
         val bundle = requestAdapter.toFileBundle(request)
 
         // store the FileBundle

@@ -2,40 +2,16 @@ package dreifa.app.tasks.ui
 
 import com.github.mustachejava.DefaultMustacheFactory
 import java.io.*
+import java.lang.RuntimeException
 
 class TemplateProcessor {
-    fun process(templateFileName: String, model: Any, layoutName: String = "default.html"): String {
-        try {
-            println("Processing $templateFileName")
-
-            val text = TemplateProcessor::class.java.getResource(templateFileName).readText()
-            val mf = DefaultMustacheFactory()
-            val mustache = mf.compile(StringReader(text), "template.mustache")
-
-            val bos = ByteArrayOutputStream()
-            val writer = OutputStreamWriter(bos)
-            mustache.execute(writer, model).flush()
-            return bos.toString()
-
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return "Problem with template: ${ex.message}"
-        }
-    }
-
-
 
     fun renderMustache(path: String, params: Map<String, Any?>, layoutName: String = "default.html"): String {
-        return try {
-            // mustache processing
-            val layout = readFileAsText("templates/layout/$layoutName", params)
+        // mustache processing
+        val layout = readFileAsText("templates/layout/$layoutName", params)
 
-            val content = readFileAsText("templates/$path", params)
-            layout.replace("<!--BODYTEXT-->", content)
-            //   }
-        } catch (ex: Exception) {
-            "<pre>" + ex.message!! + "</pre>"
-        }
+        val content = readFileAsText("templates/$path", params)
+        return layout.replace("<!--BODYTEXT-->", content)
     }
 
     private fun readFileAsText(path: String, substitutions: Map<String, Any?> = emptyMap()): String {
@@ -48,7 +24,6 @@ class TemplateProcessor {
             val bos = ByteArrayOutputStream()
             val writer = OutputStreamWriter(bos)
             mustache.execute(writer, substitutions).flush()
-
             bos.toString()
         } else {
             raw;
@@ -61,8 +36,11 @@ class TemplateProcessor {
             FileInputStream("impl/src/main/resources/$path").bufferedReader().use { it.readText() }
         } catch (fne: FileNotFoundException) {
             // running as packaged JAR
-            TemplateProcessor::class.java.getResource("/$path").readText()
+            try {
+                TemplateProcessor::class.java.getResource("/$path").readText()
+            } catch (re: RuntimeException) {
+                throw RuntimeException("Couldn't load the template `$path`. Tried both the local file system and the classpath")
+            }
         }
     }
-
 }

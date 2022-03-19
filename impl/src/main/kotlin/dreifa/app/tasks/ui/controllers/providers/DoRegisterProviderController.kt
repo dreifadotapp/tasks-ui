@@ -43,7 +43,9 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
         // build the view
         model["name"] = bundle.items[0].path
         model["registrations"] = registrations
-        val html = templateEngine().renderMustache("providers/scanJarResult.html", model)
+        val html = templateEngine().renderMustache("providers/scanJarResult.html",
+            model,
+            "layout2.html")
         return Response(Status.OK).body(html)
     }
 }

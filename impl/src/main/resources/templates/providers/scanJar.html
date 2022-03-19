@@ -1,11 +1,26 @@
 <h3>Register a provider</h3>
 
-<h4>Step 1 - Scan Jar</h4>
+<p>Upload a Jar file. The file wll be scanned for <a href="/tasks"  style="color: #B673BF;">Tasks</a>, which can be then be registered</p>
 
-<p>Upload a Jar file. The file wll be scanned for Tasks.</p>
+<ul class="step" style="color: #65E11E;">
+    <li class="step-item active" style="color: #5CAF50;">
+        <a href="#" class="tooltip" data-tooltip="Step 1" style="color: #5CAF50;">Select Jar</a>
+    </li>
+    <li class="step-item">
+        <a href="#" class="tooltip" data-tooltip="Step 2">Scan Jar</a>
+    </li>
+    <li class="step-item ">
+        <a href="#" class="tooltip" data-tooltip="Step 3">Register</a>
+    </li>
+    <li class="step-item ">
+        <a href="#" class="tooltip" data-tooltip="Step 4">Done</a>
+    </li>
+</ul>
+<br>
+
 <form action="doScan" method="post" enctype="multipart/form-data">
-    <p><input type="file" name="payload">
+    <p><input type="file" name="payload" class="complementary">
     <p>
-        <button type="submit">Scan</button>
+        <button type="submit" >Scan</button>
 </form>
 

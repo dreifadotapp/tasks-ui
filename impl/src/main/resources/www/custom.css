@@ -43,7 +43,6 @@
     }
 
 
-
 .step .step-item.active a::before {
     border-color: #5CAF50;
  }
@@ -52,4 +51,8 @@
     background: #A350AF;
     border-color: #B673BF;
     color: #eee;
+}
+
+.nav_item .active {
+   font-weight: 700;
 }

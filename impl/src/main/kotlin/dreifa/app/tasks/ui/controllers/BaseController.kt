@@ -10,6 +10,12 @@ abstract class BaseController {
         return mutableMapOf("foo" to "foo")
     }
 
+    fun setMenuFlags (model : MutableMap<String, Any>, vararg flags: String){
+        flags.asList().forEach {
+            model["menuFlag_$it"] = it
+        }
+    }
+
     abstract fun handle(req: Request): Response
 
     fun html(content: String): Response {

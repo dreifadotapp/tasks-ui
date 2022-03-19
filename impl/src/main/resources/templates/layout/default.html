@@ -21,6 +21,7 @@
            });
         });
 
+
     </script>
 
     <script src="../../static/clipboard.js/dist/clipboard.min.js"></script>
@@ -48,34 +49,61 @@
 {{/hasFlashMessage}}
 
 <div class="container">
-    <div class="columns" >
+    <div class="columns">
         <div class="column col-3" style="background-color: #EEE">
             <ul class="nav">
                 <li class="nav-item">
-                    <a href="#">Elements</a>
-                </li>
-                <li class="nav-item active">
-                    <a href="#">Layout</a>
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a href="#">Flexbox grid</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">Responsive</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">Navbar</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#">Empty states</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#">Components</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#">Utilities</a>
+                    <div class="accordion">
+                        <input type="checkbox" id="accordion-1" name="accordion-checkbox" hidden>
+                        <label class="accordion-header" for="accordion-1">
+                            <i class="icon icon-arrow-right mr-1"></i>
+                            Tasks
+                        </label>
+                        <div class="accordion-body">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <a href="/tasks">Browse Tasks </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#">Running Tasks</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="accordion">
+                        <input type="checkbox" id="accordion-2" name="accordion-checkbox" hidden>
+                        <label class="accordion-header" for="accordion-2">
+                            <i class="icon icon-arrow-right mr-1"></i>
+                            Pipelines
+                        </label>
+                        <div class="accordion-body">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <a href="/tasks">Start a Pipeline </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#">Running Pipelines</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="accordion" {{#menuFlag_prv}}open{{/menuFlag_prv}}>
+                        <input type="checkbox" id="accordion-3" name="accordion-checkbox" hidden>
+                        <label class="accordion-header" for="accordion-3">
+                            <i class="icon icon-arrow-right mr-1"></i>
+                            Providers
+                        </label>
+                        <div class="accordion-body">
+                            <ul class="nav">
+                                <li class="nav-item {{#menuFlag_reg_prv}}active{{/menuFlag_reg_prv}}">
+                                    <a href="/providers/register">Register Provider </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a href="#">View Providers</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </li>
             </ul>
 

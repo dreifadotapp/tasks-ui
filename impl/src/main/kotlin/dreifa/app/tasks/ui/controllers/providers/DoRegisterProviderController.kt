@@ -17,6 +17,9 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
 
+        setMenuFlags(model, "prv","reg_prv")
+
+
         // build a FileBundle
         val requestAdapter = MultiPartRequestToFileBundleAdapter()
         val bundle = requestAdapter.toFileBundle(request)

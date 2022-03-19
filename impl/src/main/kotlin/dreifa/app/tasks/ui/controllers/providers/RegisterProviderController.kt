@@ -10,7 +10,7 @@ import org.http4k.core.Status
 class RegisterProviderController(registry: Registry) : BaseController(){
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
-        val html = TemplateProcessor().renderMustache("providers/register.html", model)
+        val html = TemplateProcessor().renderMustache("providers/scanJar.html", model)
         return Response(Status.OK).body(html)
     }
 }

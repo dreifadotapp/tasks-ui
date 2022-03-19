@@ -2,9 +2,7 @@ package dreifa.app.tasks.ui.controllers
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
-import dreifa.app.tasks.ui.controllers.providers.DoRegisterProviderController
-import dreifa.app.tasks.ui.controllers.providers.ListProvidersController
-import dreifa.app.tasks.ui.controllers.providers.RegisterProviderController
+import dreifa.app.tasks.ui.controllers.providers.*
 import dreifa.app.tasks.ui.controllers.tasks.DoExecuteTaskController
 import dreifa.app.tasks.ui.controllers.tasks.ExecuteTaskController
 import dreifa.app.tasks.ui.controllers.tasks.ListTasksController
@@ -38,6 +36,10 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             DoRegisterProviderController(registry).handle(it)
         },
 
+        "/providers/doScan" bind Method.POST to {
+            DoScanJarController(registry).handle(it)
+        },
+
         "/tasks" bind Method.GET to {
             ListTasksController(registry).handle(it)
         },
@@ -54,6 +56,4 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             ViewTaskController(registry).handle(it)
         }
     )
-
-
 }

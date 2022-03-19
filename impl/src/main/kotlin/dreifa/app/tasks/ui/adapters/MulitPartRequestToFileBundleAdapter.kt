@@ -10,7 +10,7 @@ import java.io.File
 class MulitPartRequestToFileBundleAdapter {
     fun toFileBundle(request: Request): FileBundle {
         val receivedForm = MultipartFormBody.from(request)
-        val multipart = receivedForm.files("file1")[0]
+        val multipart = receivedForm.files("payload")[0]
         val f = File(multipart.filename)
         f.writeBytes(multipart.content.readAllBytes())
 

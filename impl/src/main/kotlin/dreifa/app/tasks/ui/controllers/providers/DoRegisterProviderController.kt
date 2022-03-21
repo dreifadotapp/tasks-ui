@@ -1,53 +1,51 @@
 package dreifa.app.tasks.ui.controllers.providers
 
-import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.registry.Registry
+import dreifa.app.ses.EventStore
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
-import dreifa.app.tasks.inbuilt.providers.TPScanJarRequest
+import dreifa.app.tasks.inbuilt.providers.TPRegisterProviderRequest
 import dreifa.app.tasks.ui.TaskNames
-import dreifa.app.tasks.ui.adapters.MultiPartRequestToFileBundleAdapter
 import dreifa.app.tasks.ui.controllers.BaseController
-import dreifa.app.types.StringList
+import dreifa.app.types.UniqueId
 import org.http4k.core.*
+import org.http4k.routing.path
 
 class DoRegisterProviderController(registry: Registry) : BaseController() {
     private val taskClient = registry.get(TaskClient::class.java)
+    private val ses = registry.get(EventStore::class.java)
 
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
 
-        setMenuFlags(model, "prv","reg_prv")
+        setMenuFlags(model, "prv", "reg_prv")
 
+        val bundleId = request.path("bundleId")!!
+        val providerClass = request.path("providerClass")!!
+        val providerId = UniqueId.alphanumeric()
 
-        // build a FileBundle
-        val requestAdapter = MultiPartRequestToFileBundleAdapter()
-        val bundle = requestAdapter.toFileBundle(request)
+        val request = TPRegisterProviderRequest(
+            jarBundleId = UniqueId.fromString(bundleId!!),
+            providerId = providerId,
+            providerName = providerClass
+        )
 
-        // store the FileBundle
-        val bundleAdapter = TextAdapter()
         val ctx = SimpleClientContext()
         taskClient.execBlocking(
             ctx,
-            TaskNames.FBStoreTask,
-            bundleAdapter.fromBundle(bundle),
+            TaskNames.TPRegisterProviderTask,
+            request,
             Unit::class
         )
 
-        // scan the Jar in the FileBundle
-        val scanRequest = TPScanJarRequest(bundle.id)
-        val registrations = taskClient.execBlocking(
-            ctx,
-            TaskNames.TPScanJarTask,
-            scanRequest,
-            StringList::class
-        )
 
         // build the view
-        model["name"] = bundle.items[0].path
-        model["registrations"] = registrations
-        val html = templateEngine().renderMustache("providers/scanJarResult.html",
-            model)
+        model["providerName"] = providerClass
+        model["providerId"] = providerId
+        val html = templateEngine().renderMustache(
+            "providers/registrationResult.html",
+            model
+        )
         return Response(Status.OK).body(html)
     }
 }

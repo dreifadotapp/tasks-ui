@@ -34,12 +34,12 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             RegisterProviderController(registry).handle(it)
         },
 
-        "/providers/doRegister" bind Method.POST to {
-            DoRegisterProviderController(registry).handle(it)
-        },
-
         "/providers/doScan" bind Method.POST to {
             DoScanJarController(registry).handle(it)
+        },
+
+        "/providers/{bundleId}/register/{providerClass}" bind Method.GET to {
+            DoRegisterProviderController(registry).handle(it)
         },
 
         "/tasks" bind Method.GET to {

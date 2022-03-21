@@ -1,7 +1,6 @@
 package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -13,7 +12,7 @@ class RegisterProviderController(registry: Registry) : BaseController() {
 
         setMenuFlags(model, "prv","reg_prv")
 
-        val html = TemplateProcessor().renderMustache("providers/scanJar.html", model)
+        val html = templateEngine().renderMustache("providers/scanJar.html", model)
         return Response(Status.OK).body(html)
     }
 }

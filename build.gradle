@@ -8,13 +8,11 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
     id("org.jetbrains.dokka") version "$kotlinVersion"
 }
-
 
 allprojects {
     //version = "0.0.1" // note, version set by jitpack publishing
@@ -85,8 +83,6 @@ subprojects {
         implementation "com.github.dreifadotapp:simple-event-store:$sesVersion"
         implementation "com.github.dreifadotapp:simple-kv-store:$sksVersion"
         implementation "com.github.dreifadotapp:file-bundle:$fileBundleVersion"
-
-        implementation "io.github.classgraph:classgraph:4.8.141"
 
         testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
         testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")

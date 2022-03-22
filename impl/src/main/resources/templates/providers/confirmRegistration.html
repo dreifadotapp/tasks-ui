@@ -4,10 +4,10 @@
     <li class="step-item" >
         <a href="#" class="tooltip" data-tooltip="Step 1" >Select Jar</a>
     </li>
-    <li class="step-item active">
+    <li class="step-item ">
         <a href="#" class="tooltip" data-tooltip="Step 2" >Scan Jar</a>
     </li>
-    <li class="step-item ">
+    <li class="step-item active">
         <a href="#" class="tooltip" data-tooltip="Step 3">Register</a>
     </li>
     <li class="step-item ">
@@ -16,14 +16,16 @@
 </ul>
 <br>
 
-<p>Scanning <b>{{name}}</b> found the following Task Providers.</p>
+<h3>Register a provider</h3>
 
-<ul class="_nav" style="list-style-type: square;">
-    {{#registrations}}<li>
-    <span class="primary">{{.}}</span>
-    <a class="btn btn-primary" href="/providers/{{bundleId}}/register/{{.}}">Register</a>
-    </li>{{/registrations}}
-</ul>
+<p>Confirm that the following provider should be registered</p>
+
+ProviderName: <b>{{providerClass}}</b> <br>
+ProviderId: <b>{{providerId}}</b> <br>
+
+<form action="/providers/{{bundleId}}/doRegister/{{providerClass}}" bind" method="post" enctype="multipart/form-data">
+        <button type="submit" >Complete Registration</button>
+</form>
 
 
 

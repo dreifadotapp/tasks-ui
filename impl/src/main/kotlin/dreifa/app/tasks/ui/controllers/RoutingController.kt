@@ -30,7 +30,7 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             ListProvidersController(registry).handle(it)
         },
 
-        "/providers/register" bind Method.GET to {
+        "/providers/startRegistration" bind Method.GET to {
             RegisterProviderController(registry).handle(it)
         },
 
@@ -39,6 +39,10 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         },
 
         "/providers/{bundleId}/register/{providerClass}" bind Method.GET to {
+            ConfirmRegisterProviderController(registry).handle(it)
+        },
+
+        "/providers/{bundleId}/doRegister/{providerClass}" bind Method.POST to {
             DoRegisterProviderController(registry).handle(it)
         },
 

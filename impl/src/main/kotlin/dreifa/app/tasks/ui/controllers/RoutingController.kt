@@ -46,6 +46,10 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             DoRegisterProviderController(registry).handle(it)
         },
 
+        "/providers/{providerId}" bind Method.GET to {
+            ViewProviderController(registry).handle(it)
+        },
+
         "/tasks" bind Method.GET to {
             ListTasksController(registry).handle(it)
         },

@@ -27,7 +27,8 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
         val request = TPRegisterProviderRequest(
             jarBundleId = UniqueId.fromString(bundleId!!),
             providerId = providerId,
-            providerName = providerClass
+            providerClazz = providerClass,
+            providerName = "todo - not setting name"
         )
 
         val ctx = SimpleClientContext()
@@ -37,7 +38,6 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
             request,
             Unit::class
         )
-
 
         // build the view
         model["providerName"] = providerClass

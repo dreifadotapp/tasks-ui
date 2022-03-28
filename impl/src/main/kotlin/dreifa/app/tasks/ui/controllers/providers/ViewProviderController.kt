@@ -11,17 +11,19 @@ import dreifa.app.tasks.ui.services.ListProvidersService
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.routing.path
 
-class ListProvidersController(registry: Registry) : BaseController() {
+class ViewProviderController(registry: Registry) : BaseController() {
     private val service = ListProvidersService(registry)
 
     override fun handle(req: Request): Response {
         val model = buildBaseModel(req)
         setMenuFlags(model, "prv","lst_prv")
 
-        model["providers"] = service.exec(SimpleClientContext())
+        val providerId = req.path("providerId")!!
+        model["providerId"] = providerId
 
-        val html = templateEngine().renderMustache("providers/list.html", model)
+        val html = templateEngine().renderMustache("providers/view.html", model)
         return Response(Status.OK).body(html)
     }
 }

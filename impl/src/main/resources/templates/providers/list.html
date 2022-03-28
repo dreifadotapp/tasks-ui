@@ -1,5 +1,20 @@
 <h3>Registered Providers</h3>
 
-{{#providers}}
-<br><a href="/provider/{{providerId}}">{{name}}</a> </br>
-{{/providers}}
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>name</th>
+        <th>class</th>
+        <th>built in </th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#providers}}
+    <tr>
+        <td><a href="/providers/{{providerId}}">{{name}}</a></td>
+        <td>{{clazz}}</td>
+        <td>{{inbuilt}}</td>
+    </tr>
+    {{/providers}}
+    </tbody>
+</table>

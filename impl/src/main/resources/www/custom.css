@@ -1,26 +1,5 @@
+/* colours using the colour wheel - https://www.canva.com/colors/color-wheel/ */
 
-
-.colour-primary {
-    background-color: #A350AF;
-    color: #020202;
-}
-.colour-primary a.btn{
-    color: #EEE;
-}
-
-.colour-primary a.btn:hover{
-    color: #BBB;
-}
-
-.colour-primary a{
-    color: #EEE;
-}
-
-.colour-primary a:hover{
-    color: #BBB;
-}
-
-    /* colours using the colour wheel - https://www.canva.com/colors/color-wheel/ */
 .primary_background {
     background-color: #A350AF;
 }
@@ -45,6 +24,25 @@
     color: #65E11E;
 }
 
+.colour-primary {
+    background-color: #A350AF;
+    color: #020202;
+}
+.colour-primary a.btn{
+    color: #EEE;
+}
+
+.colour-primary a.btn:hover{
+    color: #BBB;
+}
+
+.colour-primary a{
+    color: #EEE;
+}
+
+.colour-primary a:hover{
+    color: #BBB;
+}
 
 .btn.btn-primary {
     background: #A350AF;
@@ -67,8 +65,6 @@
 .step .step-item a::before {
     background: #A350AF;
 }
-
 .step .step-item a {
     color: #5CAF50;
 }
-

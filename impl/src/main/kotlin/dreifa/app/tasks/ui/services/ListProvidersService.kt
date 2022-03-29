@@ -8,7 +8,7 @@ import dreifa.app.tasks.inbuilt.providers.TPQueryResult
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.types.UniqueId
 
-data class Provider(
+data class ProviderInfo(
     val providerId: UniqueId,
     val name: String,
     val clazz: String,
@@ -18,14 +18,14 @@ data class Provider(
 class ListProvidersService(val registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
 
-    fun exec(ctx: ClientContext): List<Provider> {
+    fun exec(ctx: ClientContext): List<ProviderInfo> {
         val providers = taskClient.execBlocking(
             ctx,
             TaskNames.TPQueryTask,
             TPQueryParams(),
             TPQueryResult::class
-        ).map { Provider(it.providerId, it.providerName, it.providerClazz, false) }.toMutableList()
-        providers.add(Provider(InBuiltProviderId, "Built In", "", true))
+        ).map { ProviderInfo(it.providerId, it.providerName, it.providerClazz, false) }.toMutableList()
+        providers.add(ProviderInfo(InBuiltProviderId, "Built In", "", true))
         return providers
     }
 

@@ -16,13 +16,24 @@
 </ul>
 <br>
 
-<h3>Register a provider</h3>
-
 <p>Confirm that the following provider should be registered</p>
 
-ProviderName: <b>{{providerClass}}</b> <br>
-ProviderId: <b>{{providerId}}</b> <br>
+<div class="columns">
+    <div class="column col-6">
+<form action="/providers/{{bundleId}}/doRegister/{{providerClass}}" method="post" >
 
-<form action="/providers/{{bundleId}}/doRegister/{{providerClass}}" bind" method="post" enctype="multipart/form-data">
-        <button type="submit" >Complete Registration</button>
+    <div class="form-group">
+        <label class="form-label" for="provider-id">Provider Id</label>
+        <input class="form-input" type="text" name="provider-id" id="provider-id" value="{{providerId}}" placeholder="fxg1z3">
+
+        <label class="form-label" for="provider-clazz">Provider Class</label>
+        <input class="form-input" type="text" name="provider-clazz" id="provider-clazz" value="{{providerClass}}" placeholder="com.example.Tasks">
+
+        <label class="form-label" for="provider-name">Provider Name</label>
+        <input class="form-input" type="text" name="provider-name" id="provider-name" value="{{providerName}}" placeholder="Example Tasks">
+    </div>
+
+    <button type="submit" >Complete Registration</button>
 </form>
+    </div>
+</div>

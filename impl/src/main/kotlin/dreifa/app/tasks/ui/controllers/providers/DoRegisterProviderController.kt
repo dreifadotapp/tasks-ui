@@ -9,6 +9,7 @@ import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.types.UniqueId
 import org.http4k.core.*
+import org.http4k.core.body.form
 import org.http4k.routing.path
 
 class DoRegisterProviderController(registry: Registry) : BaseController() {
@@ -22,13 +23,14 @@ class DoRegisterProviderController(registry: Registry) : BaseController() {
 
         val bundleId = request.path("bundleId")!!
         val providerClass = request.path("providerClass")!!
-        val providerId = UniqueId.alphanumeric()
+        val providerId = request.form("provider-id")!!
+        val providerName = request.form("provider-name")!!
 
         val request = TPRegisterProviderRequest(
             jarBundleId = UniqueId.fromString(bundleId!!),
-            providerId = providerId,
+            providerId = UniqueId.fromString(providerId),
             providerClazz = providerClass,
-            providerName = "todo - not setting name"
+            providerName = providerName
         )
 
         val ctx = SimpleClientContext()

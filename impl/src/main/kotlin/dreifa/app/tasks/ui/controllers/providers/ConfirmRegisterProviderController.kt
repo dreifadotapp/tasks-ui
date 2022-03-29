@@ -24,11 +24,11 @@ class ConfirmRegisterProviderController(registry: Registry) : BaseController() {
         val providerClass = request.path("providerClass")!!
         val providerId = UniqueId.alphanumeric()
 
-
         // build the view
         model["bundleId"] = bundleId
         model["providerClass"] = providerClass
         model["providerId"] = providerId
+        model["providerName"] = providerClass.split(".").last()
         val html = templateEngine().renderMustache(
             "providers/confirmRegistration.html",
             model

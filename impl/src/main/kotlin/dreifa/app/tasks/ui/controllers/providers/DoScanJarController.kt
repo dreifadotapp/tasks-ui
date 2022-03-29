@@ -48,4 +48,5 @@ class DoScanJarController(registry: Registry) : BaseController() {
         val html = templateEngine().renderMustache("providers/scanJarResult.html", model)
         return Response(Status.OK).body(html)
     }
+
 }

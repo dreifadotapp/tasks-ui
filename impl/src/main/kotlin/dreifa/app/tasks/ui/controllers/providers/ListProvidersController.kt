@@ -17,7 +17,7 @@ class ListProvidersController(registry: Registry) : BaseController() {
 
     override fun handle(req: Request): Response {
         val model = buildBaseModel(req)
-        setMenuFlags(model, "prv","lst_prv")
+        setMenuFlags(model, "prv","list_prv")
 
         model["providers"] = service.exec(SimpleClientContext())
 

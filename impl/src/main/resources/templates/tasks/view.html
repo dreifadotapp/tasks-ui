@@ -1,34 +1,83 @@
-<h2>View task </h2>
-
+<h3>Task Summary</h3>
 {{#task}}
-Task is : {{name}} </br>
-Input is: {{inputClazz}} </br>
-Output is: {{outputClazz}} </br>
-Type is: {{type}} </br>
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-title">
+            <h3><span style="font-weight: 300;">{{name}}</span></h3>
+        </div>
+    </div>
+    <!--<div class="panel-nav">
+    </div>-->
+    <div class="panel-body">
+        <div class="tile-content">
+            <div class="tile-title text-bold">Input Type</div>
+            <div class="tile-subtitle">{{inputClazz}}</div>
+            <br>
+        </div>
+        <div class="tile-content">
+            <div class="tile-title text-bold">Output Type</div>
+            <div class="tile-subtitle">{{outputClazz}}</div>
+            <br>
+        </div>
+        <div class="tile-content">
+            <div class="tile-title text-bold">Task Type</div>
+            <div class="tile-subtitle">{{type}}</div>
+        </div>
+    </div>
+    <!--<div class="panel-footer">
+        footer
+    </div>-->
+</div>
 
 {{#hasTaskDoc}}
-<h3>Task Docs</h3>
-<p><b>Description:</b>&nbsp;{{description}}</p>
+<br>
+<p>Task docs are available for this task</p>
+
+<div class="panel">
+    <div class="panel-body">
+        <div class="tile-content">
+            <div class="tile-title text-bold">Description</div>
+            <div class="tile-subtitle">{{description}}</div>
+            <br>
+        </div>
+    </div>
+</div>
+<br>
 
 {{#examples}}
-<h5>Example #{{exampleNumber}}</h5>
-<p>{{description}}</p>
-<a class="btn btn-primary" href="/tasks/{{name}}/execute?example={{exampleNumber}}">Try example</a>
-</br>
-{{#hasInput}}
-{{#input}}Input: {{example}}{{#description}}- {{.}} {{/description}}  </br>
-JSON: {{{inputAsJson}}}</br>
-{{/input}}
-{{/hasInput}}
-{{^hasInput}}Input: not provided </br> {{/hasInput}}
+<div class="panel">
 
+    <div class="panel-body">
+        <div class="tile-content">
+            <h4>{{description}}</h4>
+            <!--<div class="tile-subtitle">{{description}}</div>-->
+            {{#hasInput}}{{#input}}
+            <br>
+            <div class="tile-title text-bold">Example Input</div>
+            <div class="tile-subtitle">{{example}}{{#description}}<i> - {{.}}</i>{{/description}}</div>
+            <div class="tile-title text-bold">Example Input Serialised</div>
+            <div><code>{{{inputAsJson}}}</code></div>
+            {{/input}}{{/hasInput}}
+            {{^hasInput}}Input: not provided </br>
+            {{/hasInput}}
+            {{#hasOutput}}
+            <br>
+            <div class="tile-title text-bold">Example Output</div>
+            <div class="tile-subtitle">{{output}}</div>
+            <div class="tile-title text-bold">Example Output Serialised</div>
+            <div><code>{{{outputAsJson}}}</code></div>
+            {{/hasOutput}}
+            {{^hasOutput}}Output: not provided </br> {{/hasOutput}}
+            <br>
+            <div>
+                <a class="btn btn-primary" href="/tasks/{{name}}/execute?example={{exampleNumber}}">Try example</a>
+            </div>
+            <br>
+        </div>
 
-{{#hasOutput}}
-Output: {{output}} </br>
-JSON: {{{outputAsJson}}}</br>
-{{/hasOutput}}
-{{^hasOutput}}Output: not provided </br> {{/hasOutput}}
+    </div>
 
+</div>
 </br>
 {{/examples}}
 

@@ -10,7 +10,7 @@ abstract class BaseController {
         return mutableMapOf("foo" to "foo")
     }
 
-    fun setMenuFlags (model : MutableMap<String, Any>, vararg flags: String){
+    fun setMenuFlags(model: MutableMap<String, Any>, vararg flags: String) {
         flags.asList().forEach {
             model["menuFlag_$it"] = it
         }
@@ -19,7 +19,15 @@ abstract class BaseController {
     abstract fun handle(req: Request): Response
 
     fun html(content: String): Response {
-        return Response(Status.OK).body(content)
+        return Response(Status.OK)
+            .header("content-type", "text/html")
+            .body(content)
+    }
+
+    fun json(content: String): Response {
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(content)
     }
 
     fun templateEngine(): TemplateProcessor = templateEngine

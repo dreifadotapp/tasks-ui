@@ -1,11 +1,11 @@
 <h3>Register a provider</h3>
 
 <ul class="step" style="color: #65E11E;">
-    <li class="step-item" >
-        <a href="#" class="tooltip" data-tooltip="Step 1" >Select Jar</a>
+    <li class="step-item">
+        <a href="#" class="tooltip" data-tooltip="Step 1">Select Jar</a>
     </li>
     <li class="step-item active">
-        <a href="#" class="tooltip" data-tooltip="Step 2" >Scan Jar</a>
+        <a href="#" class="tooltip" data-tooltip="Step 2">Scan Jar</a>
     </li>
     <li class="step-item ">
         <a href="#" class="tooltip" data-tooltip="Step 3">Register</a>
@@ -16,11 +16,26 @@
 </ul>
 <br>
 
-<p>Scanning <b>{{name}}</b> found the following Task Providers.</p>
+<p>Scanning <b>{{name}}</b> found the following <a
+        href="https://github.com/dreifadotapp/tasks/blob/master/impl/src/main/kotlin/dreifa/app/tasks/TaskRegistration.kt">Task
+    Providers</a></p>
 
-<ul class="_nav" style="list-style-type: square;">
-    {{#registrations}}<li>
-    <span class="primary">{{.}}</span>
-    <a class="btn btn-primary" href="/providers/{{bundleId}}/register/{{.}}">Register</a>
-    </li>{{/registrations}}
-</ul>
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>Class</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#registrations}}
+    <tr>
+        <td>{{.}}</td>
+        <td>
+            <a class="btn btn-primary" href="/providers/{{bundleId}}/register/{{.}}">Register</a>
+        </td>
+    </tr>
+    {{/registrations}}
+    </tbody>
+</table>
+

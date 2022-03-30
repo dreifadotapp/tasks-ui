@@ -3,6 +3,7 @@ package dreifa.app.tasks.ui.controllers
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.providers.*
+import dreifa.app.tasks.ui.controllers.ses.AllEventsController
 import dreifa.app.tasks.ui.controllers.tasks.*
 import org.http4k.core.*
 import org.http4k.routing.*
@@ -15,6 +16,10 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             Response(Status.TEMPORARY_REDIRECT).header("Location", "$vHost/home")
         },
         "/static" bind static(ResourceLoader.Classpath("www")),
+
+        "/events/all" bind Method.GET to {
+            AllEventsController(registry).handle(it)
+        },
 
         "/home" bind Method.GET to {
             val html = TemplateProcessor().renderMustache("home.html",

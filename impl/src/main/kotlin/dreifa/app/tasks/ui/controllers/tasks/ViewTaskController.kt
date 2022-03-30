@@ -6,20 +6,34 @@ import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
+import dreifa.app.tasks.ui.controllers.BaseController
+import dreifa.app.tasks.ui.services.TaskClientService
+import dreifa.app.tasks.ui.services.TaskFactoryService
+import dreifa.app.types.UniqueId
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ViewTaskController(registry: Registry) {
-    private val taskFactory = registry.get(TaskFactory::class.java)
-    private val taskClient = registry.get(TaskClient::class.java)
+class ViewTaskController(registry: Registry) : BaseController() {
+    //private val taskFactory = registry.get(TaskFactory::class.java)
+    //private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
-    fun handle(request: Request): Response {
-        val model = HashMap<String, Any>()
+    private val taskFactoryService = TaskFactoryService(registry)
+    private val taskClientService = TaskClientService(registry)
+
+    override fun handle(request: Request): Response {
+        val model = buildBaseModel(request)
         val taskName = request.path("task")!!
+        val providerId = request.path("providerId")!!
+
         model["name"] = taskName
+        model["providerId"] = providerId
+
+        val ctx = SimpleClientContext()
+        val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
+        val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 
         val task = taskFactory.createInstance(taskName)
         when (task) {
@@ -31,7 +45,7 @@ class ViewTaskController(registry: Registry) {
             }
         }
 
-        checkForTaskDocs(taskName, model)
+        checkForTaskDocs(taskClient, taskName, model)
 
         val reflections = TaskReflections(task::class)
         model["inputClazz"] = reflections.paramClass().qualifiedName!!
@@ -42,7 +56,7 @@ class ViewTaskController(registry: Registry) {
 
     }
 
-    private fun checkForTaskDocs(task: String, model: HashMap<String, Any>) {
+    private fun checkForTaskDocs(taskClient: TaskClient, task: String, model: MutableMap<String, Any>) {
         try {
             val docs = taskClient.taskDocs<Any, Any>(
                 SimpleClientContext(),

@@ -54,15 +54,15 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
             ListTasksController(registry).handle(it)
         },
 
-        "/tasks/{task}/execute" bind Method.GET to {
+        "/tasks/{providerId}/{task}/execute" bind Method.GET to {
             ExecuteTaskController(registry).handle(it)
         },
 
-        "/tasks/{task}/doExecute" bind Method.POST to {
+        "/tasks/{providerId}/{task}/doExecute" bind Method.POST to {
             DoExecuteTaskController(registry).handle(it)
         },
 
-        "/tasks/{task}/view" bind Method.GET to {
+        "/tasks/{providerId}/{task}/view" bind Method.GET to {
             ViewTaskController(registry).handle(it)
         }
     )

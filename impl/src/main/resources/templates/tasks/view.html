@@ -29,9 +29,6 @@
             <div class="tile-subtitle">{{type}}</div>
         </div>
     </div>
-    <!--<div class="panel-footer">
-        footer
-    </div>-->
 </div>
 
 {{#hasTaskDoc}}
@@ -75,7 +72,7 @@
             {{^hasOutput}}Output: not provided </br> {{/hasOutput}}
             <br>
             <div>
-                <a class="btn btn-primary" href="/tasks/{{name}}/execute?example={{exampleNumber}}">Try example</a>
+                <a class="btn btn-primary" href="/tasks/{{providerId}}/{{name}}/execute?example={{exampleNumber}}">Try example</a>
             </div>
             <br>
         </div>

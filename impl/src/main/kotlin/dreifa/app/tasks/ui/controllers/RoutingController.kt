@@ -3,10 +3,7 @@ package dreifa.app.tasks.ui.controllers
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.providers.*
-import dreifa.app.tasks.ui.controllers.tasks.DoExecuteTaskController
-import dreifa.app.tasks.ui.controllers.tasks.ExecuteTaskController
-import dreifa.app.tasks.ui.controllers.tasks.ListTasksController
-import dreifa.app.tasks.ui.controllers.tasks.ViewTaskController
+import dreifa.app.tasks.ui.controllers.tasks.*
 import org.http4k.core.*
 import org.http4k.routing.*
 
@@ -31,7 +28,7 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         },
 
         "/providers/startRegistration" bind Method.GET to {
-            RegisterProviderController(registry).handle(it)
+            RegisterProviderController().handle(it)
         },
 
         "/providers/doScan" bind Method.POST to {
@@ -60,6 +57,11 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
 
         "/tasks/{providerId}/{task}/doExecute" bind Method.POST to {
             DoExecuteTaskController(registry).handle(it)
+        },
+
+        "/tasks/view" bind Method.GET to {
+            // the case when there is no active task
+            Response(Status.TEMPORARY_REDIRECT).header("Location", "$vHost/tasks")
         },
 
         "/tasks/{providerId}/{task}/view" bind Method.GET to {

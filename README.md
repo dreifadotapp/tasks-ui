@@ -8,8 +8,8 @@
 A basic UI for viewing and running [Tasks](https://github.com/dreifadotapp/tasks).
 
 This is built using classic "server side" MVC pattern using the [Htt4k](https://www.http4k.org/)
-toolkit, [Spectre](https://picturepan2.github.io/spectre/index.html) CSS Framework
-and [Mustache](https://github.com/spullara/mustache.java) template engine.
+toolkit, the [Spectre](https://picturepan2.github.io/spectre/index.html) CSS Framework and
+the [Mustache](https://github.com/spullara/mustache.java) template engine.
 
-The implementation is basic. There is minimal unit testing or error handing, nor is there a well-defined URL pattern.
+The implementation is simple. There is minimal unit testing or error handing, nor is there a well-defined URL pattern.
 

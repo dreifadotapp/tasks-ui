@@ -14,11 +14,9 @@ import org.http4k.routing.path
 
 class DoRegisterProviderController(registry: Registry) : BaseController() {
     private val taskClient = registry.get(TaskClient::class.java)
-    private val ses = registry.get(EventStore::class.java)
 
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
-
         setMenuFlags(model, "prv", "reg_prv")
 
         val bundleId = request.path("bundleId")!!

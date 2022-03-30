@@ -12,6 +12,8 @@ class ListTasksController(registry: Registry) : BaseController() {
     private val service = ListTasksService(registry)
     override fun handle(req: Request): Response {
         val model = buildBaseModel(req)
+        setMenuFlags(model, "tsk", "list_tsk")
+
         model["tasks"] = service.exec(SimpleClientContext())
         val html = templateEngine().renderMustache("tasks/list.html", model)
         return Response(Status.OK).body(html)

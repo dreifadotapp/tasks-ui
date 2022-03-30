@@ -16,7 +16,7 @@ class DoScanJarController(registry: Registry) : BaseController() {
 
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
-        setMenuFlags(model, "prv","reg_prv")
+        setMenuFlags(model, "prv", "reg_prv")
 
         // build a FileBundle
         val requestAdapter = MultiPartRequestToFileBundleAdapter()
@@ -45,8 +45,8 @@ class DoScanJarController(registry: Registry) : BaseController() {
         model["name"] = bundle.items[0].path
         model["bundleId"] = bundle.id.toString()
         model["registrations"] = registrations
-        val html = templateEngine().renderMustache("providers/scanJarResult.html", model)
-        return Response(Status.OK).body(html)
+        val content = templateEngine().renderMustache("providers/scanJarResult.html", model)
+        return html(content)
     }
 
 }

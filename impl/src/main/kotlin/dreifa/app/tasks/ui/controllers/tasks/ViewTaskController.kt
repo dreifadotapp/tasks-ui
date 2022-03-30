@@ -17,19 +17,21 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ViewTaskController(registry: Registry) : BaseController() {
-    //private val taskFactory = registry.get(TaskFactory::class.java)
-    //private val taskClient = registry.get(TaskClient::class.java)
     private val serialiser = JsonSerialiser()
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
 
     override fun handle(request: Request): Response {
-        val model = buildBaseModel(request)
         val taskName = request.path("task")!!
         val providerId = request.path("providerId")!!
 
-        model["name"] = taskName
-        model["providerId"] = providerId
+        val model = buildBaseModel(request)
+        setMenuFlags(model, "tsk", "view_tsk")
+        setActiveTask(model, providerId, taskName)
+
+        val taskModel = HashMap<String, Any>()
+        taskModel["name"] = taskName
+        taskModel["providerId"] = providerId
 
         val ctx = SimpleClientContext()
         val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
@@ -38,22 +40,22 @@ class ViewTaskController(registry: Registry) : BaseController() {
         val task = taskFactory.createInstance(taskName)
         when (task) {
             is BlockingTask<*, *> -> {
-                model["type"] = "Blocking"
+                taskModel["type"] = "Blocking"
             }
             is AsyncTask<*, *> -> {
-                model["type"] = "Async"
+                taskModel["type"] = "Async"
             }
         }
 
-        checkForTaskDocs(taskClient, taskName, model)
+        checkForTaskDocs(taskClient, taskName, taskModel)
 
         val reflections = TaskReflections(task::class)
-        model["inputClazz"] = reflections.paramClass().qualifiedName!!
-        model["outputClazz"] = reflections.resultClass().qualifiedName!!
+        taskModel["inputClazz"] = reflections.paramClass().qualifiedName!!
+        taskModel["outputClazz"] = reflections.resultClass().qualifiedName!!
+        model["task"] = taskModel
 
-        val html = TemplateProcessor().renderMustache("tasks/view.html", mapOf("task" to model))
+        val html = TemplateProcessor().renderMustache("tasks/view.html", model)
         return Response(Status.OK).body(html)
-
     }
 
     private fun checkForTaskDocs(taskClient: TaskClient, task: String, model: MutableMap<String, Any>) {

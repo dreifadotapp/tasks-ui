@@ -1,23 +1,15 @@
 package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.registry.Registry
-import dreifa.app.ses.EventStore
-import dreifa.app.tasks.client.SimpleClientContext
-import dreifa.app.tasks.client.TaskClient
-import dreifa.app.tasks.inbuilt.providers.TPRegisterProviderRequest
-import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.types.UniqueId
 import org.http4k.core.*
 import org.http4k.routing.path
 
 class ConfirmRegisterProviderController(registry: Registry) : BaseController() {
-    private val taskClient = registry.get(TaskClient::class.java)
-    private val ses = registry.get(EventStore::class.java)
 
     override fun handle(request: Request): Response {
         val model = buildBaseModel(request)
-
         setMenuFlags(model, "prv", "reg_prv")
 
         val bundleId = request.path("bundleId")!!
@@ -29,10 +21,10 @@ class ConfirmRegisterProviderController(registry: Registry) : BaseController() {
         model["providerClass"] = providerClass
         model["providerId"] = providerId
         model["providerName"] = providerClass.split(".").last()
-        val html = templateEngine().renderMustache(
+        val content = templateEngine().renderMustache(
             "providers/confirmRegistration.html",
             model
         )
-        return Response(Status.OK).body(html)
+        return html(content)
     }
 }

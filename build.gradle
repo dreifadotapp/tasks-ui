@@ -84,6 +84,9 @@ subprojects {
         implementation "com.github.dreifadotapp:simple-kv-store:$sksVersion"
         implementation "com.github.dreifadotapp:file-bundle:$fileBundleVersion"
 
+        // workaround until classloading is fixed
+        //implementation "com.github.dreifadotapp:terraform-tasks:$terraformTasksVersion"
+
         testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
         testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

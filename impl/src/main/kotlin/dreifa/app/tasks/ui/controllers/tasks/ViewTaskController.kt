@@ -77,14 +77,14 @@ class ViewTaskController(registry: Registry) : BaseController() {
         if (example.input() != null) {
             model["hasInput"] = true
             model["input"] = example.input()!!
-            model["inputAsJson"] = serialiser.toPacketData(example.input()!!.example)
+            model["inputAsJson"] = serialiser.toPacketPayload(example.input()!!.example) ?: ""
         } else {
             model["hasInput"] = false
         }
         if (example.output() != null) {
             model["hasOutput"] = true
             model["output"] = example.output()!!
-            model["outputAsJson"] = serialiser.toPacketData(example.output()!!)
+            model["outputAsJson"] = serialiser.toPacketPayload(example.output()!!) ?: ""
         } else {
             model["hasOutput"] = false
         }

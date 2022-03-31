@@ -31,8 +31,7 @@ class DoExecuteTaskController(registry: Registry) : BaseController() {
         val result = taskClient.execBlocking(ctx, taskName, input, kClass)
 
         val json = serialiser.toPacketPayload(result)
-        return json(json)
-
+        return json(json ?: "null")
     }
 
     private fun clazzFromName(clazzName: String): KClass<out Any> {

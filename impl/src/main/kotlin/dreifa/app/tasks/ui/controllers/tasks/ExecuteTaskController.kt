@@ -71,7 +71,7 @@ class ExecuteTaskController(registry: Registry) {
         if (example.input() != null) {
             model["hasInput"] = true
             model["input"] = example.input()!!
-            model["inputAsJson"] = serialiser.toPacketData(example.input()!!.example)
+            model["inputAsJson"] = serialiser.toPacketPayload(example.input()!!.example) ?: ""
         } else {
             model["hasInput"] = false
         }

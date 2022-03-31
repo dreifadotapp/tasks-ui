@@ -6,6 +6,7 @@ import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
+import dreifa.app.tasks.ui.services.SimpleSerialiserService
 import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
@@ -16,7 +17,7 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ExecuteTaskController(registry: Registry) {
-    private val serialiser = JsonSerialiser()
+    private val simpleSerialiserService = SimpleSerialiserService(registry)
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
     fun handle(request: Request): Response {
@@ -28,6 +29,8 @@ class ExecuteTaskController(registry: Registry) {
         val model = HashMap<String, Any>()
         model["name"] = taskName
         val ctx = SimpleClientContext()
+        val serialiser = simpleSerialiserService.exec(ctx, providerId)
+
         val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
         val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 
@@ -42,7 +45,7 @@ class ExecuteTaskController(registry: Registry) {
             }
         }
 
-        checkForTaskDocs(taskClient, taskName, exampleNumber, model)
+        checkForTaskDocs(serialiser, taskClient, taskName, exampleNumber, model)
 
         val reflections = TaskReflections(task::class)
         model["inputClazz"] = reflections.paramClass().qualifiedName!!
@@ -53,7 +56,13 @@ class ExecuteTaskController(registry: Registry) {
 
     }
 
-    private fun checkForTaskDocs(taskClient: TaskClient, task: String, example: Int, model: HashMap<String, Any>) {
+    private fun checkForTaskDocs(
+        serialiser: JsonSerialiser,
+        taskClient: TaskClient,
+        task: String,
+        example: Int,
+        model: HashMap<String, Any>
+    ) {
         try {
             val docs = taskClient.taskDocs<Any, Any>(
                 SimpleClientContext(),
@@ -61,12 +70,12 @@ class ExecuteTaskController(registry: Registry) {
             )
             model["hasTaskDoc"] = true
             model["description"] = docs.description()
-            model["example"] = examplesPresenter(docs.examples()[example - 1])
+            model["example"] = examplesPresenter(serialiser, docs.examples()[example - 1])
         } catch (ignoreMe: RuntimeException) {
         }
     }
 
-    private fun examplesPresenter(example: TaskExample<Any, Any>): Map<String, Any> {
+    private fun examplesPresenter(serialiser: JsonSerialiser, example: TaskExample<Any, Any>): Map<String, Any> {
         val model = HashMap<String, Any>()
         if (example.input() != null) {
             model["hasInput"] = true

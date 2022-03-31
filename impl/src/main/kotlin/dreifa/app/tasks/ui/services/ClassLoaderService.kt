@@ -1,35 +1,37 @@
 package dreifa.app.tasks.ui.services
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
-import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.client.TaskClient
+import dreifa.app.tasks.inbuilt.providers.TPInfoResult
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.types.UniqueId
+import java.net.URLClassLoader
 
-class TaskClientService(val registry: Registry) {
+class ClassLoaderService(val registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
     private val listProvidersService = ListProvidersService(registry)
 
-    fun exec(ctx: ClientContext, providerId: UniqueId): TaskClient {
+    fun exec(ctx: ClientContext, providerId: UniqueId): ClassLoader {
 
         val provider = listProvidersService
             .exec(ctx)
             .single { it.providerId == providerId }
         return if (provider.inbuilt) {
-            taskClient
+            this::class.java.classLoader
         } else {
-            val providerTaskFactory = taskClient.execBlocking(
+            val info = taskClient.execBlocking(
                 ctx,
-                TaskNames.TPLoadTaskFactoryTask,
+                TaskNames.TPInfoTask,
                 provider.providerId,
-                TaskFactory::class
+                TPInfoResult::class
             )
-
-            val localRegistry = registry.clone()
-            localRegistry.store(providerTaskFactory)
-            SimpleTaskClient(localRegistry)
+            taskClient.execBlocking(
+                ctx,
+                TaskNames.CLLoadJarTask,
+                info.jarBundleId,
+                URLClassLoader::class
+            )
         }
     }
 

@@ -7,6 +7,7 @@ import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
+import dreifa.app.tasks.ui.services.ClassLoaderService
 import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
@@ -17,6 +18,7 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ViewTaskController(registry: Registry) : BaseController() {
+    private val classLoaderService = ClassLoaderService(registry)
     private val serialiser = JsonSerialiser()
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
@@ -34,6 +36,7 @@ class ViewTaskController(registry: Registry) : BaseController() {
         taskModel["providerId"] = providerId
 
         val ctx = SimpleClientContext()
+        val loader = classLoaderService.exec(ctx,UniqueId.fromString(providerId))
         val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
         val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 

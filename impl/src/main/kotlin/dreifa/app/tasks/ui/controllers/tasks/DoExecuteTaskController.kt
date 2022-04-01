@@ -15,13 +15,13 @@ import kotlin.reflect.KClass
 class DoExecuteTaskController(registry: Registry) : BaseController() {
     private val classLoaderService = ClassLoaderService(registry)
     private val taskClientService = TaskClientService(registry)
-    override fun handle(request: Request): Response {
-        val taskName = request.path("task")!!
-        val providerId = request.path("providerId")!!
+    override fun handle(req: Request): Response {
+        val taskName = req.path("task")!!
+        val providerId = req.path("providerId")!!
 
-        val inputClazz = request.form("inputClazz")!!
-        val outputClazz = request.form("outputClazz")!!
-        val inputJson = request.form("inputJson")!!
+        val inputClazz = req.form("inputClazz")!!
+        val outputClazz = req.form("outputClazz")!!
+        val inputJson = req.form("inputJson")!!
         val kClass = clazzFromName(outputClazz)
 
         val ctx = SimpleClientContext()

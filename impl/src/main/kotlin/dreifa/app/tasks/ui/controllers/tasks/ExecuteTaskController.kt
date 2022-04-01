@@ -6,6 +6,7 @@ import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
+import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.tasks.ui.services.SimpleSerialiserService
 import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
@@ -16,15 +17,15 @@ import org.http4k.core.Status
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ExecuteTaskController(registry: Registry) {
+class ExecuteTaskController(registry: Registry) : BaseController(){
     private val simpleSerialiserService = SimpleSerialiserService(registry)
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
-    fun handle(request: Request): Response {
-        val taskName = request.path("task")!!
-        val providerId = request.path("providerId")!!
+    override fun handle(req: Request): Response {
+        val taskName = req.path("task")!!
+        val providerId = req.path("providerId")!!
 
-        val exampleNumber = request.query("example")!!.toInt()
+        val exampleNumber = req.query("example")!!.toInt()
 
         val model = HashMap<String, Any>()
         model["name"] = taskName

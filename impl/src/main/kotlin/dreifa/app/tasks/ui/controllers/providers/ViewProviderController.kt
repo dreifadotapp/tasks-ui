@@ -1,11 +1,6 @@
 package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.client.SimpleClientContext
-import dreifa.app.tasks.client.TaskClient
-import dreifa.app.tasks.inbuilt.providers.TPQueryParams
-import dreifa.app.tasks.inbuilt.providers.TPQueryResult
-import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.tasks.ui.services.ListProvidersService
 import org.http4k.core.Request

@@ -28,5 +28,4 @@ class TaskFactoryService(val registry: Registry) {
             )
         }
     }
-
 }

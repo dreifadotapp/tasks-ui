@@ -19,18 +19,12 @@ import org.http4k.filter.ServerFilters
 
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
-import java.io.File
 
-fun main(args: Array<String>) {
+fun main() {
     val port = System.getenv("TASKUI_PORT") ?: "8080"
     val vhost = System.getenv("TASKUI_VHOST") ?: "http://localhost:$port"
-    val expectedConfig = File("config.yaml") // under docker we simply expect this to mapped to the working dir
-    val testConfig = File("src/test/resources/config.yaml")
-
-//    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
-//    val configYaml = if (expectedConfig.exists()) expectedConfig else testConfig
-//
-//    val config: DashboardConfig = mapper.readValue(configYaml)
+    //val expectedConfig = File("config.yaml") // under docker we simply expect this to mapped to the working dir
+    //val testConfig = File("src/test/resources/config.yaml")
 
     // base services
     val registry = Registry()

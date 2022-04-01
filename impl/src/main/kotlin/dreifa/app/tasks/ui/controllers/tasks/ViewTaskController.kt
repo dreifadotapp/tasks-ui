@@ -18,16 +18,15 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ViewTaskController(registry: Registry) : BaseController() {
-    private val classLoaderService = ClassLoaderService(registry)
     private val serialiser = JsonSerialiser()
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
 
-    override fun handle(request: Request): Response {
-        val taskName = request.path("task")!!
-        val providerId = request.path("providerId")!!
+    override fun handle(req: Request): Response {
+        val taskName = req.path("task")!!
+        val providerId = req.path("providerId")!!
 
-        val model = buildBaseModel(request)
+        val model = buildBaseModel(req)
         setMenuFlags(model, "tsk", "view_tsk")
         setActiveTask(model, providerId, taskName)
 
@@ -36,7 +35,6 @@ class ViewTaskController(registry: Registry) : BaseController() {
         taskModel["providerId"] = providerId
 
         val ctx = SimpleClientContext()
-        val loader = classLoaderService.exec(ctx,UniqueId.fromString(providerId))
         val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
         val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 

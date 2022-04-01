@@ -41,7 +41,7 @@ class RoutingController(registry: Registry, vHost: String) : HttpHandler {
         },
 
         "/providers/{bundleId}/register/{providerClass}" bind Method.GET to {
-            ConfirmRegisterProviderController(registry).handle(it)
+            ConfirmRegisterProviderController().handle(it)
         },
 
         "/providers/{bundleId}/doRegister/{providerClass}" bind Method.POST to {

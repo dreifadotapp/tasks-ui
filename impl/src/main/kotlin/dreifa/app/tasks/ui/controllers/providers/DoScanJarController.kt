@@ -14,13 +14,13 @@ import org.http4k.core.*
 class DoScanJarController(registry: Registry) : BaseController() {
     private val taskClient = registry.get(TaskClient::class.java)
 
-    override fun handle(request: Request): Response {
-        val model = buildBaseModel(request)
+    override fun handle(req: Request): Response {
+        val model = buildBaseModel(req)
         setMenuFlags(model, "prv", "reg_prv")
 
         // build a FileBundle
         val requestAdapter = MultiPartRequestToFileBundleAdapter()
-        val bundle = requestAdapter.toFileBundle(request)
+        val bundle = requestAdapter.toFileBundle(req)
 
         // store the FileBundle
         val bundleAdapter = TextAdapter()

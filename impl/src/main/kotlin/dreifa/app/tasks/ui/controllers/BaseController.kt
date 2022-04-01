@@ -7,7 +7,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 
 abstract class BaseController {
-    protected fun buildBaseModel(req: Request): MutableMap<String, Any> {
+    protected fun buildBaseModel(@Suppress("UNUSED_PARAMETER") req: Request): MutableMap<String, Any> {
         return mutableMapOf("currentViewTask" to "view")
     }
 

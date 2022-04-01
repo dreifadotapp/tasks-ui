@@ -8,7 +8,7 @@ import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.types.UniqueId
 
-class TaskClientService(val registry: Registry) {
+class TaskClientService(private val registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
     private val listProvidersService = ListProvidersService(registry)
 
@@ -20,6 +20,7 @@ class TaskClientService(val registry: Registry) {
         return if (provider.inbuilt) {
             taskClient
         } else {
+            // A TaskFactory with the right classloader
             val providerTaskFactory = taskClient.execBlocking(
                 ctx,
                 TaskNames.TPLoadTaskFactoryTask,
@@ -27,9 +28,11 @@ class TaskClientService(val registry: Registry) {
                 TaskFactory::class
             )
 
+            // A TaskClient with the right classloader
+            val clazzLoader = ClassLoaderService(registry).exec(ctx, provider.providerId)
             val localRegistry = registry.clone()
             localRegistry.store(providerTaskFactory)
-            SimpleTaskClient(localRegistry)
+            SimpleTaskClient(localRegistry, clazzLoader)
         }
     }
 

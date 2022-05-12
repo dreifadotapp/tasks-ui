@@ -17,43 +17,45 @@ import org.http4k.core.Status
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ExecuteTaskController(registry: Registry) : BaseController(){
+class ExecuteTaskController(registry: Registry) : BaseController(registry) {
     private val simpleSerialiserService = SimpleSerialiserService(registry)
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
+
     override fun handle(req: Request): Response {
-        val taskName = req.path("task")!!
-        val providerId = req.path("providerId")!!
+        return runWithTelemetry("/tasks/{providerId}/{task}/execute") { telemetryContext ->
+            val taskName = req.path("task")!!
+            val providerId = req.path("providerId")!!
+            val exampleNumber = req.query("example")!!.toInt()
 
-        val exampleNumber = req.query("example")!!.toInt()
+            val model = HashMap<String, Any>()
+            model["name"] = taskName
+            val ctx = SimpleClientContext()
+            val serialiser = simpleSerialiserService.exec(ctx, providerId)
 
-        val model = HashMap<String, Any>()
-        model["name"] = taskName
-        val ctx = SimpleClientContext()
-        val serialiser = simpleSerialiserService.exec(ctx, providerId)
-
-        val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
-        val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
+            val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
+            val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 
 
-        val task = taskFactory.createInstance(taskName)
-        when (task) {
-            is BlockingTask<*, *> -> {
-                model["type"] = "Blocking"
+            val task = taskFactory.createInstance(taskName)
+            when (task) {
+                is BlockingTask<*, *> -> {
+                    model["type"] = "Blocking"
+                }
+                is AsyncTask<*, *> -> {
+                    model["type"] = "Async"
+                }
             }
-            is AsyncTask<*, *> -> {
-                model["type"] = "Async"
-            }
+
+            checkForTaskDocs(serialiser, taskClient, taskName, exampleNumber, model)
+
+            val reflections = TaskReflections(task::class)
+            model["inputClazz"] = reflections.paramClass().qualifiedName!!
+            model["outputClazz"] = reflections.resultClass().qualifiedName!!
+
+            val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
+            Response(Status.OK).body(html)
         }
-
-        checkForTaskDocs(serialiser, taskClient, taskName, exampleNumber, model)
-
-        val reflections = TaskReflections(task::class)
-        model["inputClazz"] = reflections.paramClass().qualifiedName!!
-        model["outputClazz"] = reflections.resultClass().qualifiedName!!
-
-        val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
-        return Response(Status.OK).body(html)
 
     }
 

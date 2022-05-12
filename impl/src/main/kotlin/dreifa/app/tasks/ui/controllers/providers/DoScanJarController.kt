@@ -11,7 +11,7 @@ import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.types.StringList
 import org.http4k.core.*
 
-class DoScanJarController(registry: Registry) : BaseController() {
+class DoScanJarController(registry: Registry) : BaseController(registry) {
     private val taskClient = registry.get(TaskClient::class.java)
 
     override fun handle(req: Request): Response {

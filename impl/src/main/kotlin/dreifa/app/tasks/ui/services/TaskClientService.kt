@@ -11,7 +11,6 @@ import dreifa.app.types.UniqueId
 class TaskClientService(private val registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
     private val listProvidersService = ListProvidersService(registry)
-
     fun exec(ctx: ClientContext, providerId: UniqueId): TaskClient {
 
         val provider = listProvidersService

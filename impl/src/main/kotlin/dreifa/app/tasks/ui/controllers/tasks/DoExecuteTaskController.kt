@@ -12,7 +12,7 @@ import org.http4k.core.body.form
 import org.http4k.routing.path
 import kotlin.reflect.KClass
 
-class DoExecuteTaskController(registry: Registry) : BaseController() {
+class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
     private val classLoaderService = ClassLoaderService(registry)
     private val taskClientService = TaskClientService(registry)
     override fun handle(req: Request): Response {

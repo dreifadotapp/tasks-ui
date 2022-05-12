@@ -11,7 +11,7 @@ import org.http4k.core.*
 import org.http4k.core.body.form
 import org.http4k.routing.path
 
-class DoRegisterProviderController(registry: Registry) : BaseController() {
+class DoRegisterProviderController(registry: Registry) : BaseController(registry) {
     private val taskClient = registry.get(TaskClient::class.java)
 
     override fun handle(req: Request): Response {

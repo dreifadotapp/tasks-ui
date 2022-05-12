@@ -7,7 +7,7 @@ import dreifa.app.tasks.ui.services.ListProvidersService
 import org.http4k.core.Request
 import org.http4k.core.Response
 
-class ListProvidersController(registry: Registry) : BaseController() {
+class ListProvidersController(registry: Registry) : BaseController(registry) {
     private val service = ListProvidersService(registry)
 
     override fun handle(req: Request): Response {

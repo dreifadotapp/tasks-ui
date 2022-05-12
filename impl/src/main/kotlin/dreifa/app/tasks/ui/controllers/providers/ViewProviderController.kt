@@ -8,7 +8,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.path
 
-class ViewProviderController(registry: Registry) : BaseController() {
+class ViewProviderController(registry: Registry) : BaseController(registry) {
     private val service = ListProvidersService(registry)
 
     override fun handle(req: Request): Response {

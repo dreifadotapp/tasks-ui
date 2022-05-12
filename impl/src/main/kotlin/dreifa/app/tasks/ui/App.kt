@@ -1,5 +1,6 @@
 package dreifa.app.tasks.ui
 
+import dreifa.app.opentelemetry.JaegerOpenTelemetryProvider
 import dreifa.app.registry.Registry
 import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
@@ -33,7 +34,16 @@ fun main() {
     val logConsumerContext = InMemoryLogging()
     val captured = CapturedOutputStream(logConsumerContext)
     val locations = TestLocations()
-    registry.store(es).store(sks).store(logConsumerContext).store(captured).store(locations)
+    val provider = JaegerOpenTelemetryProvider(false, "tasks-ui")
+    val tracer = provider.sdk().getTracer("tasks")
+
+    registry.store(es)
+        .store(sks)
+        .store(logConsumerContext)
+        .store(captured)
+        .store(locations)
+        .store(provider)
+        .store(tracer)
 
     // wirein logging channel
     val logChannelFactory = DefaultLoggingChannelFactory(registry)

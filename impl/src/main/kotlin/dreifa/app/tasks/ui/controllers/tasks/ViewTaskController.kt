@@ -17,53 +17,55 @@ import org.http4k.core.Status
 import org.http4k.routing.path
 import java.lang.RuntimeException
 
-class ViewTaskController(registry: Registry) : BaseController() {
+class ViewTaskController(registry: Registry) : BaseController(registry) {
     private val serialiser = JsonSerialiser()
     private val taskFactoryService = TaskFactoryService(registry)
     private val taskClientService = TaskClientService(registry)
 
     override fun handle(req: Request): Response {
-        val taskName = req.path("task")!!
-        val providerId = req.path("providerId")!!
+        return runWithTelemetry("/tasks/{providerId}/{task}/view") { telemetryContext ->
 
-        val model = buildBaseModel(req)
-        setMenuFlags(model, "tsk", "view_tsk")
-        setActiveTask(model, providerId, taskName)
+            val taskName = req.path("task")!!
+            val providerId = req.path("providerId")!!
 
-        val taskModel = HashMap<String, Any>()
-        taskModel["name"] = taskName
-        taskModel["providerId"] = providerId
+            val model = buildBaseModel(req)
+            setMenuFlags(model, "tsk", "view_tsk")
+            setActiveTask(model, providerId, taskName)
 
-        val ctx = SimpleClientContext()
-        val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
-        val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
+            val taskModel = HashMap<String, Any>()
+            taskModel["name"] = taskName
+            taskModel["providerId"] = providerId
 
-        val task = taskFactory.createInstance(taskName)
-        when (task) {
-            is BlockingTask<*, *> -> {
-                taskModel["type"] = "Blocking"
+            val ctx = SimpleClientContext(telemetryContext = telemetryContext.dto())
+            val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
+            val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
+
+            val task = taskFactory.createInstance(taskName)
+            when (task) {
+                is BlockingTask<*, *> -> {
+                    taskModel["type"] = "Blocking"
+                }
+                is AsyncTask<*, *> -> {
+                    taskModel["type"] = "Async"
+                }
             }
-            is AsyncTask<*, *> -> {
-                taskModel["type"] = "Async"
-            }
+
+            checkForTaskDocs(taskClient, taskName, taskModel)
+
+            val reflections = TaskReflections(task::class)
+            taskModel["inputClazz"] = reflections.paramClass().qualifiedName!!
+            taskModel["outputClazz"] = reflections.resultClass().qualifiedName!!
+            model["task"] = taskModel
+
+            val html = TemplateProcessor().renderMustache("tasks/view.html", model)
+            Response(Status.OK).body(html)
         }
-
-        checkForTaskDocs(taskClient, taskName, taskModel)
-
-        val reflections = TaskReflections(task::class)
-        taskModel["inputClazz"] = reflections.paramClass().qualifiedName!!
-        taskModel["outputClazz"] = reflections.resultClass().qualifiedName!!
-        model["task"] = taskModel
-
-        val html = TemplateProcessor().renderMustache("tasks/view.html", model)
-        return Response(Status.OK).body(html)
     }
 
     private fun checkForTaskDocs(taskClient: TaskClient, task: String, model: MutableMap<String, Any>) {
         try {
             val docs = taskClient.taskDocs<Any, Any>(
-                SimpleClientContext(),
-                task
+                SimpleClientContext(), task
             )
             model["hasTaskDoc"] = true
             model["description"] = docs.description()

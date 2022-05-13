@@ -7,6 +7,7 @@ import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.services.ListProvidersService
 import dreifa.app.types.NotRequired
@@ -24,10 +25,13 @@ class TaskInfos(data: List<TaskInfo>) : ArrayList<TaskInfo>(data)
 /**
  * A internal task to list all available tasks
  */
-class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired,TaskInfos>{
+class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfos> {
     private val taskFactory = registry.get(TaskFactory::class.java)
-    private val taskClient = registry.get(TaskClient::class.java)
-    private val listProvidersService = ListProvidersService(registry)
+    //private val taskClient = registry.get(TaskClient::class.java)
+    //private val listProvidersService = ListProvidersService(registry)
+
+    private val internalTaskClient = registry.get(InternalOnlyTaskClient::class.java).client
+
 
     override fun exec(ctx: ExecutionContext, input: NotRequired): TaskInfos {
         val clientContext = SimpleClientContext(telemetryContext = ctx.telemetryContext().dto())
@@ -37,8 +41,14 @@ class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired,TaskInfos
     private fun doExec(ctx: ClientContext): List<TaskInfo> {
         val results = ArrayList<TaskInfo>()
 
-        listProvidersService.exec(ctx).forEach { provider ->
+        val providers = internalTaskClient.execBlocking(ctx,
+            TaskNames.ListProvidersTask,
+            NotRequired.instance(),
+            ProviderInfos::class)
+
+        providers.forEach { provider ->
             if (provider.inbuilt) {
+                // can read from the local task factory
                 results.addAll(taskFactory
                     .list()
                     .map {
@@ -50,7 +60,7 @@ class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired,TaskInfos
                         )
                     })
             } else {
-                val providerTaskFactory = taskClient.execBlocking(
+                val providerTaskFactory = internalTaskClient.execBlocking(
                     ctx,
                     TaskNames.TPLoadTaskFactoryTask,
                     provider.providerId,
@@ -71,5 +81,4 @@ class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired,TaskInfos
 
         return results.sortedBy { it.clazz }
     }
-
 }

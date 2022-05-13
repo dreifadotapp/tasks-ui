@@ -6,16 +6,20 @@ import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
 import dreifa.app.tasks.TaskFactory
+import dreifa.app.tasks.TaskRegistration
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.demo.DemoTasks
 import dreifa.app.tasks.demo.echo.EchoTasks
 import dreifa.app.tasks.inbuilt.InBuiltTasks
+import dreifa.app.tasks.inbuilt.providers.TPLoadTaskFactoryTask
+import dreifa.app.tasks.inbuilt.providers.TPLoadTaskFactoryTaskImpl
 import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
+import dreifa.app.tasks.ui.tasks.ListProvidersTask
 import dreifa.app.tasks.ui.tasks.ListTasksTask
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
@@ -66,9 +70,10 @@ fun main() {
     // wire in the internal tasks that support the UI layer (these cannot be run externally)
     val taskFactoryInternal = TaskFactory(registry)
     taskFactoryInternal.register(ListTasksTask::class)
+    taskFactoryInternal.register(ListProvidersTask::class)
+    taskFactoryInternal.register(TPLoadTaskFactoryTaskImpl::class, TPLoadTaskFactoryTask::class)
     val taskClientInternal = SimpleTaskClient(registry.clone().store(taskFactoryInternal))
-    registry.store(InternalOnlyTasks(taskFactoryInternal, taskClientInternal))
-
+    registry.store(InternalOnlyTaskClient(taskClientInternal))
 
     val app =
         ServerFilters.CatchAll().then(
@@ -80,5 +85,6 @@ fun main() {
     server.start()
 }
 
-data class InternalOnlyTasks(val factory: TaskFactory, val client: TaskClient)
+// Allows the app to hold 2 TaskClients in the single registry
+data class InternalOnlyTaskClient(val client: TaskClient)
 

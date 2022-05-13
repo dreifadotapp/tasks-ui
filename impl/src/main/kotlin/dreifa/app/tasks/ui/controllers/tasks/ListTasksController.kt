@@ -2,11 +2,9 @@ package dreifa.app.tasks.ui.controllers.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.client.SimpleClientContext
-import dreifa.app.tasks.ui.InternalOnlyTasks
+import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.controllers.BaseController
-import dreifa.app.tasks.ui.services.ListTasksService
 import dreifa.app.tasks.ui.tasks.ListTasksTask
-import dreifa.app.tasks.ui.tasks.TaskInfo
 import dreifa.app.tasks.ui.tasks.TaskInfos
 import dreifa.app.types.NotRequired
 import org.http4k.core.Request
@@ -14,7 +12,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 
 class ListTasksController(registry: Registry) : BaseController(registry) {
-    private val internalTasks = registry.get(InternalOnlyTasks::class.java)
+    private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks")

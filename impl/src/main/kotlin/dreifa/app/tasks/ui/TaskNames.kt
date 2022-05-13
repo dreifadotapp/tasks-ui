@@ -13,4 +13,7 @@ object TaskNames {
 
     // ClassLoader
     val CLLoadJarTask = "dreifa.app.tasks.inbuilt.classloader.CLLoadJarTask"
+
+    // Internal Task - not exposed to clients
+    val ListProvidersTask = "dreifa.app.tasks.ui.tasks.ListProvidersTask"
 }

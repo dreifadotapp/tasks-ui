@@ -1,11 +1,17 @@
-package dreifa.app.tasks.ui.services
+package dreifa.app.tasks.ui.tasks
 
 import dreifa.app.registry.Registry
+import dreifa.app.tasks.BlockingTask
+import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
+import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
+import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.inbuilt.providers.TPQueryParams
 import dreifa.app.tasks.inbuilt.providers.TPQueryResult
 import dreifa.app.tasks.ui.TaskNames
+import dreifa.app.tasks.ui.services.ListProvidersService
+import dreifa.app.types.NotRequired
 import dreifa.app.types.UniqueId
 
 data class ProviderInfo(
@@ -14,12 +20,20 @@ data class ProviderInfo(
     val clazz: String,
     val inbuilt: Boolean
 )
+// type safe list for simple-serialisation
 
-@Deprecated(message = "use ListProvidersTask")
-class ListProvidersService(val registry: Registry) {
+class ProviderInfos(data: List<ProviderInfo>) : ArrayList<ProviderInfo>(data)
+
+
+class ListProvidersTask(registry : Registry) : BlockingTask<NotRequired,ProviderInfos> {
     private val taskClient = registry.get(TaskClient::class.java)
 
-    fun exec(ctx: ClientContext): List<ProviderInfo> {
+    override fun exec(ctx: ExecutionContext, input: NotRequired): ProviderInfos {
+        val clientContext = SimpleClientContext(telemetryContext = ctx.telemetryContext().dto())
+        return ProviderInfos(doExec(clientContext))
+    }
+
+    private fun doExec(ctx: ClientContext): List<ProviderInfo> {
         val providers = taskClient.execBlocking(
             ctx,
             TaskNames.TPQueryTask,

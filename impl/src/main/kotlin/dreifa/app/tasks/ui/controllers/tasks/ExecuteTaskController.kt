@@ -24,7 +24,7 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/execute")
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { _ ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
             val exampleNumber = req.query("example")!!.toInt()
@@ -57,7 +57,6 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
             val html = TemplateProcessor().renderMustache("tasks/execute.html", mapOf("task" to model))
             Response(Status.OK).body(html)
         }
-
     }
 
     private fun checkForTaskDocs(

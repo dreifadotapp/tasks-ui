@@ -6,7 +6,6 @@ import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
 import dreifa.app.tasks.TaskFactory
-import dreifa.app.tasks.TaskRegistration
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.client.TaskClient
@@ -19,8 +18,8 @@ import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
-import dreifa.app.tasks.ui.tasks.ListProvidersTask
-import dreifa.app.tasks.ui.tasks.ListTasksTask
+import dreifa.app.tasks.ui.tasks.UIListProvidersTask
+import dreifa.app.tasks.ui.tasks.UIListTasksTask
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 
@@ -69,8 +68,8 @@ fun main() {
 
     // wire in the internal tasks that support the UI layer (these cannot be run externally)
     val taskFactoryInternal = TaskFactory(registry)
-    taskFactoryInternal.register(ListTasksTask::class)
-    taskFactoryInternal.register(ListProvidersTask::class)
+    taskFactoryInternal.register(UIListTasksTask::class)
+    taskFactoryInternal.register(UIListProvidersTask::class)
     taskFactoryInternal.register(TPLoadTaskFactoryTaskImpl::class, TPLoadTaskFactoryTask::class)
     val taskClientInternal = SimpleTaskClient(registry.clone().store(taskFactoryInternal))
     registry.store(InternalOnlyTaskClient(taskClientInternal))

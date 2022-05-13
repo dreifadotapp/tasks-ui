@@ -5,16 +5,23 @@ import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.client.TaskClient
+import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
+import dreifa.app.tasks.ui.tasks.ProviderInfos
+import dreifa.app.types.NotRequired
 import dreifa.app.types.UniqueId
 
 class TaskClientService(private val registry: Registry) {
     private val taskClient = registry.get(TaskClient::class.java)
-    private val listProvidersService = ListProvidersService(registry)
-    fun exec(ctx: ClientContext, providerId: UniqueId): TaskClient {
+    private val internalTaskClient = registry.get(InternalOnlyTaskClient::class.java).client
 
-        val provider = listProvidersService
-            .exec(ctx)
+    fun exec(ctx: ClientContext, providerId: UniqueId): TaskClient {
+        val providers = internalTaskClient.execBlocking(ctx,
+            TaskNames.UIListProvidersTask,
+            NotRequired.instance(),
+            ProviderInfos::class)
+
+        val provider = providers
             .single { it.providerId == providerId }
         return if (provider.inbuilt) {
             taskClient

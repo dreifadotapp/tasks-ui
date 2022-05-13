@@ -83,7 +83,7 @@ abstract class BaseController(registry: Registry) {
 
     private fun completeSpan(span: Span, ex: Throwable) {
         span.recordException(ex)
-        span.setStatus(StatusCode.ERROR, ex.message)
+        span.setStatus(StatusCode.ERROR, ex.message!!)
         span.end()
     }
 

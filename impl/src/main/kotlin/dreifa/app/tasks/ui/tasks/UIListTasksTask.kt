@@ -5,11 +5,9 @@ import dreifa.app.tasks.BlockingTask
 import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleClientContext
-import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
-import dreifa.app.tasks.ui.services.ListProvidersService
 import dreifa.app.types.NotRequired
 import dreifa.app.types.UniqueId
 
@@ -25,13 +23,9 @@ class TaskInfos(data: List<TaskInfo>) : ArrayList<TaskInfo>(data)
 /**
  * A internal task to list all available tasks
  */
-class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfos> {
+class UIListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfos> {
     private val taskFactory = registry.get(TaskFactory::class.java)
-    //private val taskClient = registry.get(TaskClient::class.java)
-    //private val listProvidersService = ListProvidersService(registry)
-
     private val internalTaskClient = registry.get(InternalOnlyTaskClient::class.java).client
-
 
     override fun exec(ctx: ExecutionContext, input: NotRequired): TaskInfos {
         val clientContext = SimpleClientContext(telemetryContext = ctx.telemetryContext().dto())
@@ -42,7 +36,7 @@ class ListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfo
         val results = ArrayList<TaskInfo>()
 
         val providers = internalTaskClient.execBlocking(ctx,
-            TaskNames.ListProvidersTask,
+            TaskNames.UIListProvidersTask,
             NotRequired.instance(),
             ProviderInfos::class)
 

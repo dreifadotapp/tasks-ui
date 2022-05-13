@@ -2,7 +2,6 @@ package dreifa.app.tasks.ui.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.BlockingTask
-import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
@@ -10,7 +9,6 @@ import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.inbuilt.providers.TPQueryParams
 import dreifa.app.tasks.inbuilt.providers.TPQueryResult
 import dreifa.app.tasks.ui.TaskNames
-import dreifa.app.tasks.ui.services.ListProvidersService
 import dreifa.app.types.NotRequired
 import dreifa.app.types.UniqueId
 
@@ -20,12 +18,10 @@ data class ProviderInfo(
     val clazz: String,
     val inbuilt: Boolean
 )
-// type safe list for simple-serialisation
 
 class ProviderInfos(data: List<ProviderInfo>) : ArrayList<ProviderInfo>(data)
 
-
-class ListProvidersTask(registry : Registry) : BlockingTask<NotRequired,ProviderInfos> {
+class UIListProvidersTask(registry: Registry) : BlockingTask<NotRequired, ProviderInfos> {
     private val taskClient = registry.get(TaskClient::class.java)
 
     override fun exec(ctx: ExecutionContext, input: NotRequired): ProviderInfos {

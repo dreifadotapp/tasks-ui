@@ -7,7 +7,6 @@ import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
-import dreifa.app.tasks.ui.services.ClassLoaderService
 import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
@@ -23,8 +22,9 @@ class ViewTaskController(registry: Registry) : BaseController(registry) {
     private val taskClientService = TaskClientService(registry)
 
     override fun handle(req: Request): Response {
-        return runWithTelemetry("/tasks/{providerId}/{task}/view") { telemetryContext ->
+        val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/view")
 
+        return runWithTelemetry(trc) { tec ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
 
@@ -36,7 +36,7 @@ class ViewTaskController(registry: Registry) : BaseController(registry) {
             taskModel["name"] = taskName
             taskModel["providerId"] = providerId
 
-            val ctx = SimpleClientContext(telemetryContext = telemetryContext.dto())
+            val ctx = SimpleClientContext(telemetryContext = tec.otc.dto())
             val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
             val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
 

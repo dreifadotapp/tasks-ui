@@ -23,7 +23,8 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
     private val taskClientService = TaskClientService(registry)
 
     override fun handle(req: Request): Response {
-        return runWithTelemetry("/tasks/{providerId}/{task}/execute") { telemetryContext ->
+        val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/execute")
+        return runWithTelemetry(trc) { tec ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
             val exampleNumber = req.query("example")!!.toInt()

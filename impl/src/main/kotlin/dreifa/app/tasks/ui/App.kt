@@ -34,8 +34,8 @@ fun main() {
     val logConsumerContext = InMemoryLogging()
     val captured = CapturedOutputStream(logConsumerContext)
     val locations = TestLocations()
-    val provider = JaegerOpenTelemetryProvider(false, "tasks-ui")
-    val tracer = provider.sdk().getTracer("tasks")
+    val provider = JaegerOpenTelemetryProvider(false, "app.dreifa.tasks-ui")
+    val tracer = provider.sdk().getTracer("local-tasks")
 
     registry.store(es)
         .store(sks)

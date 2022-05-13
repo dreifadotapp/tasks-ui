@@ -6,6 +6,7 @@ import dreifa.app.registry.Registry
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.types.UniqueId
 import io.opentelemetry.api.trace.Span
+import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.api.trace.Tracer
 import org.http4k.core.Request
@@ -16,15 +17,17 @@ abstract class BaseController(registry: Registry) {
     private val tracer = registry.getOrNull(Tracer::class.java)
     private val provider = registry.getOrNull(OpenTelemetryProvider::class.java)
     fun runWithTelemetry(
-        spanName: String,
-        block: ((telemetryContext: OpenTelemetryContext) -> Response)
+        trc: TelemetryRequestContext,
+        block: ((tec: TelemetryExecutionContext) -> Response)
     ): Response {
         return if (provider != null && tracer != null) {
-            val span = tracer.spanBuilder(spanName).startSpan()
+            val span = tracer.spanBuilder(trc.spanName).setSpanKind(SpanKind.SERVER).startSpan()
+            span.setAttribute("http.method", trc.req.method.name)
+
             try {
                 val telemetryContext = OpenTelemetryContext.fromSpan(span)
                 val result = block.invoke(
-                    telemetryContext
+                    TelemetryExecutionContext(trc.req, telemetryContext),
                 )  // what if the result is streaming ? are we closing the span too soon?
                 completeSpan(span)
                 result
@@ -33,7 +36,7 @@ abstract class BaseController(registry: Registry) {
                 throw ex
             }
         } else {
-            block.invoke(OpenTelemetryContext.root())
+            block.invoke(TelemetryExecutionContext(trc.req, OpenTelemetryContext.root()))
         }
     }
 
@@ -87,4 +90,15 @@ abstract class BaseController(registry: Registry) {
     companion object {
         private val templateEngine = TemplateProcessor()
     }
+
+    /**
+     * The data a controller must pass INTO the telemetry handler
+     */
+    data class TelemetryRequestContext(val req: Request, val spanName: String)
+
+    /**
+     * The data the telemetry handler passes back to the code block
+     */
+    data class TelemetryExecutionContext(val req: Request, val otc: OpenTelemetryContext)
+
 }

@@ -23,7 +23,7 @@ class UIClassLoaderTask(registry: Registry) : BlockingTask<UniqueId, ClassLoader
         return doExec(clientContext, input)
     }
 
-    fun doExec(ctx: ClientContext, providerId: UniqueId): ClassLoader {
+    private fun doExec(ctx: ClientContext, providerId: UniqueId): ClassLoader {
 
         val providers = internalTaskClient.execBlocking(
             ctx,

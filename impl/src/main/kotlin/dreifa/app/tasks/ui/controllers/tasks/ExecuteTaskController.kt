@@ -5,10 +5,11 @@ import dreifa.app.sis.JsonSerialiser
 import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
+import dreifa.app.tasks.ui.InternalOnlyTaskClient
+import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
 import dreifa.app.tasks.ui.services.SimpleSerialiserService
-import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
 import org.http4k.core.Request
@@ -20,22 +21,30 @@ import java.lang.RuntimeException
 class ExecuteTaskController(registry: Registry) : BaseController(registry) {
     private val simpleSerialiserService = SimpleSerialiserService(registry)
     private val taskFactoryService = TaskFactoryService(registry)
-    private val taskClientService = TaskClientService(registry)
+    private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
+
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/execute")
-        return runWithTelemetry(trc) { _ ->
+        return runWithTelemetry(trc) { tec ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
             val exampleNumber = req.query("example")!!.toInt()
 
             val model = HashMap<String, Any>()
             model["name"] = taskName
-            val ctx = SimpleClientContext()
-            val serialiser = simpleSerialiserService.exec(ctx, providerId)
+            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
 
-            val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
-            val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
+            val serialiser = simpleSerialiserService.exec(clientContext, providerId)
+
+            val taskFactory = taskFactoryService.exec(clientContext, UniqueId.fromString(providerId))
+
+            val taskClient = internalTasks.client.execBlocking(
+                clientContext,
+                TaskNames.UITaskClientTask,
+                UniqueId.fromString(providerId),
+                TaskClient::class
+            )
 
 
             val task = taskFactory.createInstance(taskName)

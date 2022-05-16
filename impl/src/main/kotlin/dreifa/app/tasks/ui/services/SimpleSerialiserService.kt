@@ -10,8 +10,6 @@ import dreifa.app.types.UniqueId
 class SimpleSerialiserService(val registry: Registry) {
     private val internalTaskClient = registry.get(InternalOnlyTaskClient::class.java).client
 
-    //private val classLoaderService = ClassLoaderService(registry)
-
     fun exec(ctx: ClientContext, providerId: UniqueId): JsonSerialiser {
         val loader = internalTaskClient.execBlocking(ctx,
             TaskNames.UIClassLoaderTask,

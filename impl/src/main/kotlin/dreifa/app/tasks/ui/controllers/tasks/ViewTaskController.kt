@@ -5,9 +5,10 @@ import dreifa.app.sis.JsonSerialiser
 import dreifa.app.tasks.*
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
+import dreifa.app.tasks.ui.InternalOnlyTaskClient
+import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
-import dreifa.app.tasks.ui.services.TaskClientService
 import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
 import org.http4k.core.Request
@@ -19,7 +20,8 @@ import java.lang.RuntimeException
 class ViewTaskController(registry: Registry) : BaseController(registry) {
     private val serialiser = JsonSerialiser()
     private val taskFactoryService = TaskFactoryService(registry)
-    private val taskClientService = TaskClientService(registry)
+    private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
+
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/view")
@@ -38,7 +40,13 @@ class ViewTaskController(registry: Registry) : BaseController(registry) {
 
             val ctx = SimpleClientContext(telemetryContext = tec.otc.dto())
             val taskFactory = taskFactoryService.exec(ctx, UniqueId.fromString(providerId))
-            val taskClient = taskClientService.exec(ctx, UniqueId.fromString(providerId))
+
+            val taskClient = internalTasks.client.execBlocking(
+                ctx,
+                TaskNames.UITaskClientTask,
+                UniqueId.fromString(providerId),
+                TaskClient::class
+            )
 
             val task = taskFactory.createInstance(taskName)
             when (task) {

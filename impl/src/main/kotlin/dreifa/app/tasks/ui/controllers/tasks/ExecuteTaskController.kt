@@ -19,7 +19,7 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ExecuteTaskController(registry: Registry) : BaseController(registry) {
-    private val simpleSerialiserService = SimpleSerialiserService(registry)
+    //private val simpleSerialiserService = SimpleSerialiserService(registry)
     private val taskFactoryService = TaskFactoryService(registry)
     private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
 
@@ -35,7 +35,13 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
             model["name"] = taskName
             val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
 
-            val serialiser = simpleSerialiserService.exec(clientContext, providerId)
+            //val serialiser = simpleSerialiserService.exec(clientContext, providerId)
+            val serialiser = internalTasks.client.execBlocking(
+                clientContext,
+                TaskNames.UISimpleSerialiserTask,
+                UniqueId.fromString(providerId),
+                JsonSerialiser::class
+            )
 
             val taskFactory = taskFactoryService.exec(clientContext, UniqueId.fromString(providerId))
 

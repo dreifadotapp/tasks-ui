@@ -18,10 +18,7 @@ import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.ui.controllers.RoutingController
-import dreifa.app.tasks.ui.tasks.UIClassLoaderTask
-import dreifa.app.tasks.ui.tasks.UIListProvidersTask
-import dreifa.app.tasks.ui.tasks.UIListTasksTask
-import dreifa.app.tasks.ui.tasks.UITaskClientTask
+import dreifa.app.tasks.ui.tasks.*
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
 
@@ -74,6 +71,8 @@ fun main() {
     taskFactoryInternal.register(UIListProvidersTask::class)
     taskFactoryInternal.register(UIClassLoaderTask::class)
     taskFactoryInternal.register(UITaskClientTask::class)
+    taskFactoryInternal.register(UISimpleSerialiserTask::class)
+
 
     taskFactoryInternal.register(TPLoadTaskFactoryTaskImpl::class, TPLoadTaskFactoryTask::class)
     val taskClientInternal = SimpleTaskClient(registry.clone().store(taskFactoryInternal))

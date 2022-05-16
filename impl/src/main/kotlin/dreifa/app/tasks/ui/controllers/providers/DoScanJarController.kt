@@ -15,38 +15,41 @@ class DoScanJarController(registry: Registry) : BaseController(registry) {
     private val taskClient = registry.get(TaskClient::class.java)
 
     override fun handle(req: Request): Response {
-        val model = buildBaseModel(req)
-        setMenuFlags(model, "prv", "reg_prv")
+        val trc = TelemetryRequestContext(req, "/providers/doScan")
+        return runWithTelemetry(trc) { tec ->
+            val model = buildBaseModel(req)
+            setMenuFlags(model, "prv", "reg_prv")
 
-        // build a FileBundle
-        val requestAdapter = MultiPartRequestToFileBundleAdapter()
-        val bundle = requestAdapter.toFileBundle(req)
+            // build a FileBundle
+            val requestAdapter = MultiPartRequestToFileBundleAdapter()
+            val bundle = requestAdapter.toFileBundle(req)
 
-        // store the FileBundle
-        val bundleAdapter = TextAdapter()
-        val ctx = SimpleClientContext()
-        taskClient.execBlocking(
-            ctx,
-            TaskNames.FBStoreTask,
-            bundleAdapter.fromBundle(bundle),
-            Unit::class
-        )
+            // store the FileBundle
+            val bundleAdapter = TextAdapter()
+            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
+            taskClient.execBlocking(
+                clientContext,
+                TaskNames.FBStoreTask,
+                bundleAdapter.fromBundle(bundle),
+                Unit::class
+            )
 
-        // scan the Jar in the FileBundle
-        val scanRequest = TPScanJarRequest(bundle.id)
-        val registrations = taskClient.execBlocking(
-            ctx,
-            TaskNames.TPScanJarTask,
-            scanRequest,
-            StringList::class
-        )
+            // scan the Jar in the FileBundle
+            val scanRequest = TPScanJarRequest(bundle.id)
+            val registrations = taskClient.execBlocking(
+                clientContext,
+                TaskNames.TPScanJarTask,
+                scanRequest,
+                StringList::class
+            )
 
-        // build the view
-        model["name"] = bundle.items[0].path
-        model["bundleId"] = bundle.id.toString()
-        model["registrations"] = registrations
-        val content = templateEngine().renderMustache("providers/scanJarResult.html", model)
-        return html(content)
+            // build the view
+            model["name"] = bundle.items[0].path
+            model["bundleId"] = bundle.id.toString()
+            model["registrations"] = registrations
+            val content = templateEngine().renderMustache("providers/scanJarResult.html", model)
+            html(content)
+        }
     }
 
 }

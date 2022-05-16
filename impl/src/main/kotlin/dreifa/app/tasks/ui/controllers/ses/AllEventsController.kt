@@ -13,11 +13,15 @@ class AllEventsController(registry: Registry) : BaseController(registry) {
     private val ses = registry.get(EventStore::class.java)
 
     override fun handle(req: Request): Response {
-        val events = ses.read(EverythingQuery)
+        val trc = TelemetryRequestContext(req, "/events")
+        return runWithTelemetry(trc) { _ ->
 
-        val module = KotlinModule()
-        val mapper = ObjectMapper()
-        mapper.registerModule(module)
-        return json(mapper.writeValueAsString(events))
+            val events = ses.read(EverythingQuery)
+
+            val module = KotlinModule()
+            val mapper = ObjectMapper()
+            mapper.registerModule(module)
+            json(mapper.writeValueAsString(events))
+        }
     }
 }

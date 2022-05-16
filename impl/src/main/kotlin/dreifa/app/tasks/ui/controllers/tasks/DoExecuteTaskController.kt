@@ -37,7 +37,6 @@ class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
                 ClassLoader::class
             )
 
-
             val serialiser = JsonSerialiser(loader)
             val input = serialiser.fromPacketPayload(inputJson, inputClazz)
 
@@ -48,7 +47,6 @@ class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
                 TaskClient::class
             )
 
-            //val taskClient = taskClientService.exec(clientContext, providerId)
             val result = taskClient.execBlocking(clientContext, taskName, input, kClass)
 
             val json = serialiser.toPacketPayload(result)

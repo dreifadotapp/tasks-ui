@@ -2,6 +2,7 @@ package dreifa.app.tasks.ui.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.BlockingTask
+import dreifa.app.tasks.NotRemotableTask
 import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleClientContext
@@ -23,7 +24,7 @@ class TaskInfos(data: List<TaskInfo>) : ArrayList<TaskInfo>(data)
 /**
  * A internal task to list all available tasks
  */
-class UIListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfos> {
+class UIListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskInfos>, NotRemotableTask {
     private val taskFactory = registry.get(TaskFactory::class.java)
     private val internalTaskClient = registry.get(InternalOnlyTaskClient::class.java).client
 
@@ -35,10 +36,12 @@ class UIListTasksTask(val registry: Registry) : BlockingTask<NotRequired, TaskIn
     private fun doExec(ctx: ClientContext): List<TaskInfo> {
         val results = ArrayList<TaskInfo>()
 
-        val providers = internalTaskClient.execBlocking(ctx,
+        val providers = internalTaskClient.execBlocking(
+            ctx,
             TaskNames.UIListProvidersTask,
             NotRequired.instance(),
-            ProviderInfos::class)
+            ProviderInfos::class
+        )
 
         providers.forEach { provider ->
             if (provider.inbuilt) {

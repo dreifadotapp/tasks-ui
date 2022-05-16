@@ -2,6 +2,7 @@ package dreifa.app.tasks.ui.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.BlockingTask
+import dreifa.app.tasks.NotRemotableTask
 import dreifa.app.tasks.client.ClientContext
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
@@ -21,7 +22,7 @@ data class ProviderInfo(
 
 class ProviderInfos(data: List<ProviderInfo>) : ArrayList<ProviderInfo>(data)
 
-class UIListProvidersTask(registry: Registry) : BlockingTask<NotRequired, ProviderInfos> {
+class UIListProvidersTask(registry: Registry) : BlockingTask<NotRequired, ProviderInfos>, NotRemotableTask {
     private val taskClient = registry.get(TaskClient::class.java)
 
     override fun exec(ctx: ExecutionContext, input: NotRequired): ProviderInfos {

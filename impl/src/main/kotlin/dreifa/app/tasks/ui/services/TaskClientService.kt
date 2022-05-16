@@ -34,8 +34,12 @@ class TaskClientService(private val registry: Registry) {
                 TaskFactory::class
             )
 
+            val clazzLoader = internalTaskClient.execBlocking(ctx,
+                TaskNames.UIClassLoaderTask,
+                provider.providerId,
+                ClassLoader::class)
+
             // A TaskClient with the right classloader
-            val clazzLoader = ClassLoaderService(registry).exec(ctx, provider.providerId)
             val localRegistry = registry.clone()
             localRegistry.store(providerTaskFactory)
             SimpleTaskClient(localRegistry, clazzLoader)

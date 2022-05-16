@@ -17,4 +17,8 @@ object TaskNames {
     // Internal Tasks - not exposed to clients
     const val UIListTasksTask = "dreifa.app.tasks.ui.tasks.UIListTasksTask"
     const val UIListProvidersTask = "dreifa.app.tasks.ui.tasks.UIListProvidersTask"
+    const val UITaskClientTask = "dreifa.app.tasks.ui.tasks.UITaskClientTask"
+    const val UIClassLoaderTask = "dreifa.app.tasks.ui.tasks.UIClassLoaderTask"
+
+
 }

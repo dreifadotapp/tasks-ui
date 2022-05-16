@@ -15,7 +15,6 @@ import org.http4k.routing.path
 import kotlin.reflect.KClass
 
 class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
-    //private val taskClientService = TaskClientService(registry)
     private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
 
     override fun handle(req: Request): Response {

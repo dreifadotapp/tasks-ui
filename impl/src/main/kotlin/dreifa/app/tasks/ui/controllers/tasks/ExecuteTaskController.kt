@@ -9,8 +9,6 @@ import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.tasks.ui.controllers.BaseController
-import dreifa.app.tasks.ui.services.SimpleSerialiserService
-import dreifa.app.tasks.ui.services.TaskFactoryService
 import dreifa.app.types.UniqueId
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -19,10 +17,7 @@ import org.http4k.routing.path
 import java.lang.RuntimeException
 
 class ExecuteTaskController(registry: Registry) : BaseController(registry) {
-    //private val simpleSerialiserService = SimpleSerialiserService(registry)
-    private val taskFactoryService = TaskFactoryService(registry)
     private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
-
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/execute")
@@ -35,7 +30,6 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
             model["name"] = taskName
             val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
 
-            //val serialiser = simpleSerialiserService.exec(clientContext, providerId)
             val serialiser = internalTasks.client.execBlocking(
                 clientContext,
                 TaskNames.UISimpleSerialiserTask,
@@ -43,7 +37,12 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
                 JsonSerialiser::class
             )
 
-            val taskFactory = taskFactoryService.exec(clientContext, UniqueId.fromString(providerId))
+            val taskFactory = internalTasks.client.execBlocking(
+                clientContext,
+                TaskNames.UITaskFactoryTask,
+                UniqueId.fromString(providerId),
+                TaskFactory::class
+            )
 
             val taskClient = internalTasks.client.execBlocking(
                 clientContext,
@@ -51,7 +50,6 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
                 UniqueId.fromString(providerId),
                 TaskClient::class
             )
-
 
             val task = taskFactory.createInstance(taskName)
             when (task) {

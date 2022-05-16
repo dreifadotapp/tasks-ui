@@ -20,5 +20,6 @@ object TaskNames {
     const val UITaskClientTask = "dreifa.app.tasks.ui.tasks.UITaskClientTask"
     const val UIClassLoaderTask = "dreifa.app.tasks.ui.tasks.UIClassLoaderTask"
     const val UISimpleSerialiserTask = "dreifa.app.tasks.ui.tasks.UISimpleSerialiserTask"
+    const val UITaskFactoryTask = "dreifa.app.tasks.ui.tasks.UITaskFactoryTask"
 
 }

@@ -72,7 +72,7 @@ fun main() {
     taskFactoryInternal.register(UIClassLoaderTask::class)
     taskFactoryInternal.register(UITaskClientTask::class)
     taskFactoryInternal.register(UISimpleSerialiserTask::class)
-
+    taskFactoryInternal.register(UITaskFactoryTask::class)
 
     taskFactoryInternal.register(TPLoadTaskFactoryTaskImpl::class, TPLoadTaskFactoryTask::class)
     val taskClientInternal = SimpleTaskClient(registry.clone().store(taskFactoryInternal))

@@ -78,6 +78,10 @@ subprojects {
 
         implementation "com.github.dreifadotapp:tasks:$tasksVersion"
 
+        // temporary until tasks updated
+        //implementation "com.github.dreifadotapp:simple-event-store:0.1.1"
+
+
         testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
         testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

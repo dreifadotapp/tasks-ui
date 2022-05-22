@@ -33,21 +33,23 @@ fun main() {
 
     // base services
     val registry = Registry()
-    val es = InMemoryEventStore()
+    val provider = JaegerOpenTelemetryProvider(false, "app.dreifa.tasks-ui")
+    val tracer = provider.sdk().getTracer("local-tasks")
+    registry.store(provider).store(tracer)
+
+    val es = InMemoryEventStore(registry)
     val sks = SimpleKVStore()
     val logConsumerContext = InMemoryLogging()
     val captured = CapturedOutputStream(logConsumerContext)
     val locations = TestLocations()
-    val provider = JaegerOpenTelemetryProvider(false, "app.dreifa.tasks-ui")
-    val tracer = provider.sdk().getTracer("local-tasks")
 
     registry.store(es)
         .store(sks)
         .store(logConsumerContext)
         .store(captured)
         .store(locations)
-        .store(provider)
-        .store(tracer)
+        //.store(provider)
+        //.store(tracer)
 
     // wirein logging channel
     val logChannelFactory = DefaultLoggingChannelFactory(registry)

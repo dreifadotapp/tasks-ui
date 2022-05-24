@@ -1,10 +1,15 @@
 package dreifa.app.tasks.ui.controllers
 
+import dreifa.app.opentelemetry.Helpers
 import dreifa.app.opentelemetry.OpenTelemetryContext
 import dreifa.app.opentelemetry.OpenTelemetryProvider
+import dreifa.app.opentelemetry.SpanDetails
 import dreifa.app.registry.Registry
+import dreifa.app.tasks.client.ClientContext
+import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.ui.TemplateProcessor
 import dreifa.app.types.UniqueId
+import io.opentelemetry.api.common.Attributes
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.StatusCode
@@ -13,38 +18,36 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.path
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 abstract class BaseController(registry: Registry) {
     private val tracer = registry.getOrNull(Tracer::class.java)
     private val provider = registry.getOrNull(OpenTelemetryProvider::class.java)
-    fun runWithTelemetry(
-        trc: TelemetryRequestContext, block: ((tec: TelemetryExecutionContext) -> Response)
-    ): Response {
-        return if (provider != null && tracer != null) {
-            val span = tracer.spanBuilder(trc.spanName).setSpanKind(SpanKind.SERVER).startSpan()
-            span.setAttribute("http.method", trc.req.method.name)
-            extractUrlParametersForTelemetry(trc.spanName, trc.req).forEach {
-                span.setAttribute("http.param.${it.first}", it.second)
-            }
 
-            try {
-                val telemetryContext = OpenTelemetryContext.fromSpan(span)
-                val result = block.invoke(
-                    TelemetryExecutionContext(telemetryContext),
-                )  // what if the result is streaming ? are we closing the span too soon?
-                completeSpan(span)
-                result
-            } catch (ex: Exception) {
-                completeSpan(span, ex)
-                throw ex
-            }
-        } else {
-            block.invoke(TelemetryExecutionContext(OpenTelemetryContext.root()))
+    fun runWithTelemetry(
+        trc: TelemetryRequestContext, block: ((span: Span?) -> Response)
+    ): Response {
+        val builder = Attributes.builder()
+        builder.put("http.method", trc.req.method.name)
+        extractUrlParametersForTelemetry(trc.spanName, trc.req).forEach {
+            builder.put("http.param.${it.first}", it.second)
         }
+
+        return Helpers.runWithTelemetry(
+            provider = provider,
+            tracer = tracer,
+            telemetryContext = OpenTelemetryContext.root(),
+            spanDetails = SpanDetails(trc.spanName, SpanKind.SERVER, builder.build()),
+            block = { span -> block.invoke(span) }
+        )
     }
 
+    fun clientContextWithTelemetry (span : Span?) : ClientContext {
+        return SimpleClientContext(
+            telemetryContext = OpenTelemetryContext.fromSpan(
+                span, OpenTelemetryContext.none()
+            ).dto()
+        )
+    }
 
     protected fun buildBaseModel(@Suppress("UNUSED_PARAMETER") req: Request): MutableMap<String, Any> {
         return mutableMapOf("currentViewTask" to "view")

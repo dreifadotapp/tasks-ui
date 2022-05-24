@@ -23,9 +23,10 @@ class ViewTaskController(registry: Registry) : BaseController(registry) {
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/view")
 
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { span ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
+            val clientContext = clientContextWithTelemetry(span)
 
             val model = buildBaseModel(req)
             setMenuFlags(model, "tsk", "view_tsk")
@@ -35,17 +36,15 @@ class ViewTaskController(registry: Registry) : BaseController(registry) {
             taskModel["name"] = taskName
             taskModel["providerId"] = providerId
 
-            val ctx = SimpleClientContext(telemetryContext = tec.otc.dto())
-
             val taskFactory = internalTasks.client.execBlocking(
-                ctx,
+                clientContext,
                 TaskNames.UITaskFactoryTask,
                 UniqueId.fromString(providerId),
                 TaskFactory::class
             )
 
             val taskClient = internalTasks.client.execBlocking(
-                ctx,
+                clientContext,
                 TaskNames.UITaskClientTask,
                 UniqueId.fromString(providerId),
                 TaskClient::class

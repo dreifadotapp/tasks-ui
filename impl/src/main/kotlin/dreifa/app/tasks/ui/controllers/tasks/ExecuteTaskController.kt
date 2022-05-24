@@ -21,14 +21,14 @@ class ExecuteTaskController(registry: Registry) : BaseController(registry) {
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks/{providerId}/{task}/execute")
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { span ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
             val exampleNumber = req.query("example")!!.toInt()
+            val clientContext = clientContextWithTelemetry(span)
 
             val model = HashMap<String, Any>()
             model["name"] = taskName
-            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
 
             val serialiser = internalTasks.client.execBlocking(
                 clientContext,

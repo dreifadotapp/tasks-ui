@@ -1,7 +1,6 @@
 package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
 import dreifa.app.tasks.ui.controllers.BaseController
@@ -14,9 +13,8 @@ class ListProvidersController(registry: Registry) : BaseController(registry) {
     private val internalTasks = registry.get(InternalOnlyTaskClient::class.java)
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/providers")
-        return runWithTelemetry(trc) { tec ->
-            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
-
+        return runWithTelemetry(trc) { span ->
+            val clientContext = clientContextWithTelemetry(span)
             val model = buildBaseModel(req)
             setMenuFlags(model, "prv", "list_prv")
 

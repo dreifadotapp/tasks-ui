@@ -79,7 +79,8 @@ subprojects {
         implementation "com.github.dreifadotapp:tasks:$tasksVersion"
 
         // temporary until tasks updated
-        //implementation "com.github.dreifadotapp:simple-event-store:0.1.1"
+        //implementation "com.github.dreifadotapp:simple-event-store:0.1.4"
+        compile "com.github.dreifadotapp:open-telemetry:0.0.20"
 
 
         testImplementation("com.natpryce:hamkrest:$hamkrestVersion")

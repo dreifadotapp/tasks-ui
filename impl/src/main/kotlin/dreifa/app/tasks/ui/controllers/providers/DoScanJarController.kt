@@ -2,7 +2,6 @@ package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.inbuilt.providers.TPScanJarRequest
 import dreifa.app.tasks.ui.TaskNames
@@ -16,7 +15,8 @@ class DoScanJarController(registry: Registry) : BaseController(registry) {
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/providers/doScan")
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { span ->
+            val clientContext = clientContextWithTelemetry(span)
             val model = buildBaseModel(req)
             setMenuFlags(model, "prv", "reg_prv")
 
@@ -26,7 +26,6 @@ class DoScanJarController(registry: Registry) : BaseController(registry) {
 
             // store the FileBundle
             val bundleAdapter = TextAdapter()
-            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
             taskClient.execBlocking(
                 clientContext,
                 TaskNames.FBStoreTask,

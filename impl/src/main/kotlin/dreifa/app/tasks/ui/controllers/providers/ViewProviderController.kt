@@ -10,13 +10,16 @@ import org.http4k.routing.path
 class ViewProviderController(registry: Registry) : BaseController(registry) {
 
     override fun handle(req: Request): Response {
-        val model = buildBaseModel(req)
-        setMenuFlags(model, "prv","view_prv")
+        val trc = TelemetryRequestContext(req, "/providers/{providerId}")
+        return runWithTelemetry(trc) { span ->
+            val model = buildBaseModel(req)
+            setMenuFlags(model, "prv", "view_prv")
 
-        val providerId = req.path("providerId")!!
-        model["providerId"] = providerId
+            val providerId = req.path("providerId")!!
+            model["providerId"] = providerId
 
-        val html = templateEngine().renderMustache("providers/view.html", model)
-        return Response(Status.OK).body(html)
+            val html = templateEngine().renderMustache("providers/view.html", model)
+            Response(Status.OK).body(html)
+        }
     }
 }

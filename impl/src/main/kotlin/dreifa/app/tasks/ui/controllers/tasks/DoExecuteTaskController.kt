@@ -2,7 +2,6 @@ package dreifa.app.tasks.ui.controllers.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.sis.JsonSerialiser
-import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.ui.InternalOnlyTaskClient
 import dreifa.app.tasks.ui.TaskNames
@@ -19,7 +18,7 @@ class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/tasks")
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { span ->
             val taskName = req.path("task")!!
             val providerId = req.path("providerId")!!
 
@@ -27,24 +26,17 @@ class DoExecuteTaskController(registry: Registry) : BaseController(registry) {
             val outputClazz = req.form("outputClazz")!!
             val inputJson = req.form("inputJson")!!
             val kClass = clazzFromName(outputClazz)
-
-            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
+            val clientContext = clientContextWithTelemetry(span)
 
             val loader = internalTasks.client.execBlocking(
-                clientContext,
-                TaskNames.UIClassLoaderTask,
-                UniqueId.fromString(providerId),
-                ClassLoader::class
+                clientContext, TaskNames.UIClassLoaderTask, UniqueId.fromString(providerId), ClassLoader::class
             )
 
             val serialiser = JsonSerialiser(loader)
             val input = serialiser.fromPacketPayload(inputJson, inputClazz)
 
             val taskClient = internalTasks.client.execBlocking(
-                clientContext,
-                TaskNames.UITaskClientTask,
-                UniqueId.fromString(providerId),
-                TaskClient::class
+                clientContext, TaskNames.UITaskClientTask, UniqueId.fromString(providerId), TaskClient::class
             )
 
             val result = taskClient.execBlocking(clientContext, taskName, input, kClass)

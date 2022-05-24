@@ -1,7 +1,6 @@
 package dreifa.app.tasks.ui.controllers.providers
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.client.TaskClient
 import dreifa.app.tasks.inbuilt.providers.TPRegisterProviderRequest
 import dreifa.app.tasks.ui.TaskNames
@@ -16,7 +15,8 @@ class DoRegisterProviderController(registry: Registry) : BaseController(registry
 
     override fun handle(req: Request): Response {
         val trc = TelemetryRequestContext(req, "/providers/{bundleId}/doRegister/{providerClass}")
-        return runWithTelemetry(trc) { tec ->
+        return runWithTelemetry(trc) { span ->
+            val clientContext = clientContextWithTelemetry(span)
             val model = buildBaseModel(req)
             setMenuFlags(model, "prv", "reg_prv")
 
@@ -32,7 +32,6 @@ class DoRegisterProviderController(registry: Registry) : BaseController(registry
                 providerName = providerName
             )
 
-            val clientContext = SimpleClientContext(telemetryContext = tec.otc.dto())
             taskClient.execBlocking(
                 clientContext,
                 TaskNames.TPRegisterProviderTask,

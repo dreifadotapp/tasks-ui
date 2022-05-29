@@ -28,10 +28,28 @@ To build and push an image
 ./pushImage.sh
 ```
 
-To run using docker compose
+To run using docker compose against the latest image 
 
 ```bash
-docker compose up 
+docker compose up -d 
+
+# and stop with 
+docker compose down 
 ```
 
+
 This starts the [UI](http://localhost:8080) and [Jaeger](http://localhost:16686/)
+
+To view docker container logs easily, try [logspout](https://github.com/gliderlabs/logspout)
+
+```bash
+docker run -d --name="logspout" \
+	--volume=/var/run/docker.sock:/var/run/docker.sock \
+	--publish=127.0.0.1:8000:80 \
+	gliderlabs/logspout
+	
+curl http://127.0.0.1:8000/logs	
+```
+
+
+

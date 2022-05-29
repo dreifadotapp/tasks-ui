@@ -1,3 +1,47 @@
 dependencies {
-    compile "com.github.spullara.mustache.java:compiler:$mustacheVersion"
+    implementation "com.github.spullara.mustache.java:compiler:$mustacheVersion"
+
+
+    // needs to be added manually ?
+    compile "io.opentelemetry:opentelemetry-exporter-otlp-common:$opentelemetryVersion"
+
+
+    compile "io.opentelemetry:opentelemetry-sdk:$opentelemetryVersion"
+    compile "io.opentelemetry:opentelemetry-exporter-logging:$opentelemetryVersion"
+    compile "io.opentelemetry:opentelemetry-extension-kotlin:$opentelemetryVersion"
+
+
+
+    compile "io.grpc:grpc-context:$opentelemetryVersion"
+    // for zipkin example
+    compile("io.opentelemetry:opentelemetry-exporter-zipkin:$opentelemetryVersion")
+    // for jeager
+    compile("io.opentelemetry:opentelemetry-exporter-jaeger:$opentelemetryVersion")
+    //alpha module
+    compile "io.opentelemetry:opentelemetry-semconv:$opentelemetryVersion-alpha"
+
+
+    compile "com.squareup.okhttp3:okhttp:4.9.3"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+
+    implementation "io.github.classgraph:classgraph:$classgraphVersion"
+
+
+    // wh
+
+}
+
+
+//mainClassName = "dreifa.app.tasks.ui.AppKt"
+
+
+jar {
+    manifest {
+        attributes "Main-Class": "dreifa.app.tasks.ui.AppKt"
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

@@ -1,16 +1,16 @@
-FROM openjdk:10.0.1-jre
+FROM openjdk:11.0.15-jre
 LABEL maintainer="ian.j.morgan@gmail.com"
 
-EXPOSE 7001
+EXPOSE 8080
 
 RUN mkdir -p /home/app/
-RUN mkdir -p /home/app/src/test/resources/examples
+#RUN mkdir -p /home/app/src/test/resources/main
 
 COPY ./docker/run.sh /home/app/run.sh
 RUN chmod +x /home/app/run.sh
 
-COPY ./src/test/resources/examples/* /home/app/src/test/resources/examples/
-COPY ./build/libs/event-store*.jar /home/app/event-store.jar
+#COPY ./impl/src/test/resources/examples/* /home/app/src/test/resources/examples/
+COPY ./impl/build/libs/tasks-ui-server.jar /home/app/tasks-ui-server.jar
 
 WORKDIR /home/app
 

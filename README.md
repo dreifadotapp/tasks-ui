@@ -15,7 +15,9 @@ The implementation is simple. There is minimal unit testing or error handing, no
 
 ## Running from the command line
 
-_todo_
+```bash
+./gradlew run 
+```
 
 ## Running under Docker
 

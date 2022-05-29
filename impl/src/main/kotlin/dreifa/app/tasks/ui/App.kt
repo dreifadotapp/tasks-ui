@@ -26,6 +26,7 @@ import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 
 fun main() {
+    val config = Config()
     val port = System.getenv("TASKUI_PORT") ?: "8080"
     val vhost = System.getenv("TASKUI_VHOST") ?: "http://localhost:$port"
     //val expectedConfig = File("config.yaml") // under docker we simply expect this to mapped to the working dir
@@ -33,7 +34,7 @@ fun main() {
 
     // base services
     val registry = Registry()
-    val provider = JaegerOpenTelemetryProvider(false, "app.dreifa.tasks-ui")
+    val provider = JaegerOpenTelemetryProvider(false, "app.dreifa.tasks-ui", config.jaegerEndpoint())
     val tracer = provider.sdk().getTracer("local-tasks")
     registry.store(provider).store(tracer)
 

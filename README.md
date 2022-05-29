@@ -13,3 +13,23 @@ the [Mustache](https://github.com/spullara/mustache.java) template engine.
 
 The implementation is simple. There is minimal unit testing or error handing, nor is there a well-defined URL pattern.
 
+## Running from the command line
+
+_todo_
+
+## Running under Docker
+
+To build and push an image
+
+```bash
+./buildDocker.sh 
+./pushImage.sh
+```
+
+To run using docker compose
+
+```bash
+docker compose up 
+```
+
+This starts the [UI](http://localhost:8080) and [Jaeger](http://localhost:16686/)

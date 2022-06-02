@@ -68,3 +68,9 @@
 .step .step-item a {
     color: #5CAF50;
 }
+
+/* adjust gap between cards on home page */
+.card {
+  margin-bottom:15px;
+
+}

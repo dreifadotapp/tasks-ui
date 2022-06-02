@@ -6,6 +6,12 @@ services:
       - "dreifa_app_tasks_ui_jaegerEndpoint=http://jaeger:14250"
     ports:
       - "8080:8080"
+  terraform-tasks-agent:
+    image: "ianmorgan/terraform-tasks-agent:latest"
+    environment:
+      - "dreifa_app_terraform_tasks_jaegerEndpoint=http://jaeger:14250"
+    ports:
+      - "11601:11601"
   jaeger:
     image: "jaegertracing/all-in-one:latest"
     ports:

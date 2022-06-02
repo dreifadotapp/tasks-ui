@@ -27,8 +27,8 @@ import org.http4k.server.asServer
 
 fun main() {
     val config = Config()
-    val port = System.getenv("TASKUI_PORT") ?: "8080"
-    val vhost = System.getenv("TASKUI_VHOST") ?: "http://localhost:$port"
+    val port = "8080"
+    val vhost = "http://localhost:$port"
     //val expectedConfig = File("config.yaml") // under docker we simply expect this to mapped to the working dir
     //val testConfig = File("src/test/resources/config.yaml")
 
@@ -49,8 +49,8 @@ fun main() {
         .store(logConsumerContext)
         .store(captured)
         .store(locations)
-        //.store(provider)
-        //.store(tracer)
+    //.store(provider)
+    //.store(tracer)
 
     // wirein logging channel
     val logChannelFactory = DefaultLoggingChannelFactory(registry)

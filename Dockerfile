@@ -1,5 +1,5 @@
 FROM openjdk:11.0.15-jre
-LABEL maintainer="ian.j.morgan@gmail.com"
+LABEL maintainer="admin@dreifa.com"
 
 EXPOSE 8080
 
